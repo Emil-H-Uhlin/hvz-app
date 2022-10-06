@@ -1,4 +1,4 @@
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { Auth0Provider, useAuth0, User } from '@auth0/auth0-react';
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
@@ -10,7 +10,7 @@ import checkIfAdmin from './util/checkAdmin';
 
 function App() {
   
-  const [currentUser, setUser] = useState<any | null>(null)
+  const [currentUser, setUser] = useState<hvzUser | null>(null)
   
   function LoginButton() {
     const { loginWithRedirect } = useAuth0()
@@ -64,7 +64,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/"  element={<LoginPage />}/>
-            <Route path="/admin" element={<AdminPage />}/>
+            <Route path="/admin" element={<AdminPage user={currentUser} />}/>
             <Route path="/games" element={<GamePage />}/>
           </Routes>
         </Router>
@@ -75,3 +75,8 @@ function App() {
 }
 
 export default App;
+
+export interface hvzUser extends User {
+  isAdmin: boolean,
+  token: string
+}
