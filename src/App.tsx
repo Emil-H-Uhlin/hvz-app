@@ -1,7 +1,11 @@
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './App.css';
+import AdminPage from './components/admin/AdminPage';
+import GamePage from './components/games/GamePage';
+import LoginPage from './components/login/LoginPage';
 import checkIfAdmin from './util/checkAdmin';
 
 function App() {
@@ -57,6 +61,14 @@ function App() {
       
       <div className="App">
         <UserDisplay/>
+        <Router>
+          <Routes>
+            <Route path="/"  element={<LoginPage />}/>
+            <Route path="/admin" element={<AdminPage />}/>
+            <Route path="/games" element={<GamePage />}/>
+          </Routes>
+        </Router>
+
       </div>
     
     </Auth0Provider>
