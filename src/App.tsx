@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css';
 import AdminPage from './components/admin/AdminPage';
 import GamePage from './components/games/GamePage';
-import LoginPage from './components/login/LoginPage';
 import checkIfAdmin from './util/checkAdmin';
 
 function App() {
@@ -60,10 +59,9 @@ function App() {
     scope="openid profile email">
       
       <div className="App">
-        <UserDisplay/>
         <Router>
           <Routes>
-            <Route path="/"  element={<LoginPage />}/>
+            <Route path="/"  element={<UserDisplay />}/>
             <Route path="/admin" element={<AdminPage user={currentUser} />}/>
             <Route path="/games" element={<GamePage />}/>
           </Routes>
