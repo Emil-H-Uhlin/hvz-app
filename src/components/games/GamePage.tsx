@@ -1,6 +1,9 @@
+import { withAuthenticationRequired } from "@auth0/auth0-react"
 
-export default function() {
+export function GamePage() {
 
     return <>
     </>
 }
+
+export default withAuthenticationRequired(GamePage)
