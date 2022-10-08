@@ -1,12 +1,15 @@
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { Auth0Provider, useAuth0, User } from '@auth0/auth0-react';
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './App.css';
+import AdminPage from './components/admin/AdminPage';
+import GamePage from './components/games/GamePage';
 import checkIfAdmin from './util/checkAdmin';
 
 function App() {
   
-  const [currentUser, setUser] = useState<any | null>(null)
+  const [currentUser, setUser] = useState<hvzUser | null>(null)
   
   function LoginButton() {
     const { loginWithRedirect } = useAuth0()
@@ -56,10 +59,22 @@ function App() {
     scope="openid profile email">
       
       <div className="App">
-        <UserDisplay/>
+        <Router>
+          <Routes>
+            <Route path="/"  element={<UserDisplay />}/>
+            <Route path="/admin" element={<AdminPage user={currentUser} />}/>
+            <Route path="/games" element={<GamePage />}/>
+          </Routes>
+        </Router>
+
       </div>
     
     </Auth0Provider>
 }
 
 export default App;
+
+export interface hvzUser extends User {
+  isAdmin: boolean,
+  token: string
+}
