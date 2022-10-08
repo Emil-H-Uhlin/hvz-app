@@ -1,12 +1,18 @@
 import { withAuthenticationRequired } from "@auth0/auth0-react"
-import { useEffect } from "react"
-import { Navigate } from "react-router-dom"
-import { hvzUser } from "../../App"
+import {useContext, useEffect} from "react";
+import {UserContext} from "../../UserProvider";
+import {Navigate} from "react-router-dom";
 
-export function AdminPage({ user }: { user: hvzUser | null }) {
+export function AdminPage() {
+    // @ts-ignore
+    const [hvzUser] = useContext(UserContext)
 
     return <>
-         { !user?.isAdmin && <Navigate replace to="/"></Navigate> }
+         { hvzUser && <>
+             { hvzUser.isAdmin
+                 ? <p>Some secret admin stuff</p>
+                 : <Navigate replace to="/" /> }
+         </> }
     </>
 }
 
