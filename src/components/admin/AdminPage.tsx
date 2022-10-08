@@ -1,12 +1,9 @@
 import { withAuthenticationRequired } from "@auth0/auth0-react"
-import { useEffect } from "react"
-import { Navigate } from "react-router-dom"
-import { hvzUser } from "../../App"
 
-export function AdminPage({ user }: { user: hvzUser | null }) {
+export function AdminPage() {
 
     return <>
-         { !user?.isAdmin && <Navigate replace to="/"></Navigate> }
+         { /* REDIRECT IF USER NOT ADMIN: <Navigate replace to="/"></Navigate> */ }
     </>
 }
 
