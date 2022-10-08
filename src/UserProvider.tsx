@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {hvzUser} from "./App";
+import {HvzUser} from "./App";
 import {useAuth0} from "@auth0/auth0-react";
 import checkIfAdmin from "./util/checkAdmin";
 
@@ -7,7 +7,7 @@ import checkIfAdmin from "./util/checkAdmin";
 export const UserContext = React.createContext()
 
 export default function ({ children }: {children: Array<JSX.Element> | JSX.Element }) {
-    const [hvzUser, setUser] = useState<hvzUser | null>(null)
+    const [hvzUser, setUser] = useState<HvzUser | null>(null)
     const { user, getAccessTokenSilently } = useAuth0()
 
     if (user && !hvzUser) {

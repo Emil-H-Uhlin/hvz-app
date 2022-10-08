@@ -8,7 +8,7 @@ import './App.css';
 import LoginPage from "./components/login/LoginPage";
 import AdminPage from "./components/admin/AdminPage";
 
-export interface hvzUser extends User {
+export interface HvzUser extends User {
     isAdmin: boolean,
     token: string
 }
