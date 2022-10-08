@@ -1,12 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-import { Auth0Provider, useAuth0, User } from '@auth0/auth0-react';
-import UserProvider, { UserContext } from './UserProvider'
+import { Auth0Provider, User } from '@auth0/auth0-react';
+import UserProvider from './UserProvider'
 
 import './App.css';
 
 import LoginPage from "./components/login/LoginPage";
-import {AdminPage} from "./components/admin/AdminPage";
+import AdminPage from "./components/admin/AdminPage";
+import Login from "./components/login/Login";
+
+export interface hvzUser extends User {
+    isAdmin: boolean,
+    token: string
+}
 
 function App() {
   return <Auth0Provider
@@ -15,7 +21,9 @@ function App() {
     audience={process.env.REACT_APP_AUTH0_AUDIENCE}
     redirectUri={window.location.origin}
     scope="openid profile email">
+
       <UserProvider>
+          <Login />
           <Router>
               <Routes>
                   <Route path="/" element={<LoginPage />} />
@@ -27,8 +35,3 @@ function App() {
 }
 
 export default App;
-
-export interface hvzUser extends User {
-  isAdmin: boolean,
-  token: string
-}
