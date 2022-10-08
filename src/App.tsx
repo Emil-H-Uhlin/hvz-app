@@ -5,7 +5,7 @@ import { useState } from 'react';
 import './App.css';
 
 import checkIfAdmin from './util/checkAdmin';
-import LoginPage from "./components/LoginPage";
+import LoginPage from "./components/login/LoginPage";
 
 function App() {
   return <Auth0Provider
@@ -15,6 +15,9 @@ function App() {
     redirectUri={window.location.origin}
     scope="openid profile email">
 
+      <UserProvider>
+        <LoginPage/>
+      </UserProvider>
     </Auth0Provider>
 }
 
