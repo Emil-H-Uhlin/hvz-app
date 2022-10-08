@@ -8,10 +8,11 @@ export function AdminPage() {
     const [hvzUser] = useContext(UserContext)
 
     return <>
-         { !hvzUser?.isAdmin
-             ? <Navigate replace to="/"></Navigate>
-             : <p>Some secret admin stuff</p>
-         }
+         { hvzUser && <>
+             { hvzUser.isAdmin
+                 ? <p>Some secret admin stuff</p>
+                 : <Navigate replace to="/" /> }
+         </> }
     </>
 }
 
