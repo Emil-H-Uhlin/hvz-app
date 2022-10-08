@@ -7,7 +7,6 @@ import './App.css';
 
 import LoginPage from "./components/login/LoginPage";
 import AdminPage from "./components/admin/AdminPage";
-import Login from "./components/login/Login";
 
 export interface hvzUser extends User {
     isAdmin: boolean,
@@ -23,7 +22,6 @@ function App() {
     scope="openid profile email">
 
       <UserProvider>
-          <Login />
           <Router>
               <Routes>
                   <Route path="/" element={<LoginPage />} />
