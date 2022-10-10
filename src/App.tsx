@@ -3,9 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import {Auth0Provider, useAuth0, User} from '@auth0/auth0-react';
 import UserProvider from './UserProvider'
 
-import './App.css';
+import "./styles/app.css"
 
-import LoginPage from "./components/login/LoginPage";
 import AdminPage from "./components/admin/AdminPage";
 import TitlePage from "./components/title/TitlePage";
 import HomePage from "./components/home/HomePage";
@@ -17,7 +16,7 @@ export interface HvzUser extends User {
 }
 
 function App() {
-  return <Auth0Provider
+  return <div className="app"><Auth0Provider
     domain={process.env.REACT_APP_AUTH0_DOMAIN!}
     clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
     audience={process.env.REACT_APP_AUTH0_AUDIENCE}
@@ -34,6 +33,7 @@ function App() {
           </Router>
       </UserProvider>
     </Auth0Provider>
+  </div>
 }
 
 export default App;

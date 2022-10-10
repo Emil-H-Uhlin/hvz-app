@@ -11,10 +11,23 @@ export default function TitlePage() {
     }
 
     return <div className="home">
-        <h1>HvZ</h1>
-        <h3>Humans vz Zombies</h3>
-        <hr/>
         { isAuthenticated && <Navigate to={"/home"} replace /> }
+
+        <section>
+            <h1>HvZ</h1>
+            <h3>Humans vz Zombies</h3>
+        </section>
+
+        <hr/>
+
         <LoginButton />
+        <section>
+            <p>
+                <cite><strong>Humans vs. Zombies</strong> is a game of tag played at
+                schools, camps, neighborhoods, libraries and conventions anywhere
+                around the world.</cite>
+            </p>
+        </section>
+
     </div>
 }
