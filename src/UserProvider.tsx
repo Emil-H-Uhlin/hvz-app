@@ -12,11 +12,25 @@ export default function ({ children }: {children: Array<JSX.Element> | JSX.Eleme
 
     if (user && !hvzUser) {
         (async function() {
-            await (await getAccessTokenSilently().then(token => setUser({
-                ...user,
-                isAdmin: checkIfAdmin(token),
-                token
-            })).catch(e => console.log(e)))
+            await (await getAccessTokenSilently().then(token => {
+
+                setUser({
+                    ...user,
+                    isAdmin: checkIfAdmin(token),
+                    token
+                })
+
+                fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type" : "application/json",
+                        "Authorization" : `Bearer ${token}`
+                    }
+                })
+
+            }).catch(e => console.log(e)))
+
+
         })()
     }
 
