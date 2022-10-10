@@ -1,12 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-import { Auth0Provider, User } from '@auth0/auth0-react';
+import {Auth0Provider, useAuth0, User} from '@auth0/auth0-react';
 import UserProvider from './UserProvider'
 
 import './App.css';
 
 import LoginPage from "./components/login/LoginPage";
 import AdminPage from "./components/admin/AdminPage";
+import TitlePage from "./components/title/TitlePage";
+import HomePage from "./components/home/HomePage";
+import React from "react";
 
 export interface HvzUser extends User {
     isAdmin: boolean,
@@ -24,7 +27,8 @@ function App() {
       <UserProvider>
           <Router>
               <Routes>
-                  <Route path="/" element={<LoginPage />} />
+                  <Route path="/" element={<TitlePage />} />
+                  <Route path="/home" element={<HomePage />} />
                   <Route path="/admin" element={<AdminPage />} />
               </Routes>
           </Router>
