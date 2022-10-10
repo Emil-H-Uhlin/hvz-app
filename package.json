@@ -15,8 +15,8 @@
     "typescript": "^4.8.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts-with-stylus start src/styles/app.styl",
+    "build": "react-scripts-with-stylus build src/styles/app.styl",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -35,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "create-react-app-stylus": "^1.1.1"
   }
 }
