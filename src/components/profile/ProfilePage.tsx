@@ -12,6 +12,7 @@ function ProfilePage() {
             <p>Name: {hvzUser.name}</p>
             <p>Email: {hvzUser.email}</p>
             <p>Admin: {hvzUser.isAdmin ? "yes" : "no"}</p>
+            <p>Verified email: { hvzUser.email_verified ? "yes" : "no" }</p>
         </section>
     </>
     : <h1>LOADING</h1>

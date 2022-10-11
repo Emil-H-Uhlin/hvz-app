@@ -7,13 +7,13 @@ export function AdminPage() {
     // @ts-ignore
     const [hvzUser] = useContext(UserContext)
 
-    return <>
-         { hvzUser && <>
-             { hvzUser.isAdmin
-                 ? <p>Some secret admin stuff</p>
-                 : <Navigate replace to="/" /> }
-         </> }
-    </>
+    return !!hvzUser ? <>
+            { hvzUser.isAdmin
+                ? <p>Some secret admin stuff</p>
+                : <Navigate replace to="/" />
+            }
+        </>
+        : <h1>LOADING</h1>
 }
 
 export default withAuthenticationRequired(AdminPage)

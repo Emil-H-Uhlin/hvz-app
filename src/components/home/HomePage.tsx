@@ -6,7 +6,8 @@ export default function HomePage() {
     // @ts-ignore
     const [hvzUser] = useContext(UserContext)
 
-    return <>
-        <GamesComponent />
-    </>
+    return !!hvzUser ? <>
+            <GamesComponent />
+        </>
+        : <h1>LOADING</h1>
 }
