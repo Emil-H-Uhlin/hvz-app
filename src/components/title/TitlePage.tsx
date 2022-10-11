@@ -1,6 +1,8 @@
 import {Navigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 
+import "./title.sass"
+
 export default function TitlePage() {
     const { isAuthenticated } = useAuth0()
 
@@ -9,7 +11,7 @@ export default function TitlePage() {
         return <button onClick={loginWithRedirect}>Log in with Auth0</button>
     }
 
-    return <div className="home">
+    return <div className="titlePage">
         { isAuthenticated && <Navigate to={"/home"} replace /> }
 
         <section>

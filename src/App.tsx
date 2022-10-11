@@ -8,13 +8,15 @@ import TitlePage from "./components/title/TitlePage";
 import HomePage from "./components/home/HomePage";
 import React from "react";
 
+import "./App.sass"
+
 export interface HvzUser extends User {
     isAdmin: boolean,
     token: string
 }
 
 function App() {
-  return <div className="app"><Auth0Provider
+  return <div className="container"><Auth0Provider
     domain={process.env.REACT_APP_AUTH0_DOMAIN!}
     clientId={process.env.REACT_APP_AUTH0_CLIENT_ID!}
     audience={process.env.REACT_APP_AUTH0_AUDIENCE}
