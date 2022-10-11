@@ -41,7 +41,13 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
     }
 
     return <>
-        { hvzUser != null && <LogoutButton /> }
+        { !!hvzUser && <>
+            <LogoutButton />
+            <a href={"/profile"}>Profile</a>
+            {hvzUser.isAdmin && <a href={"/admin"}>Admin</a>}
+        </> }
+        { !!hvzUser && <LogoutButton /> }
+
         <UserContext.Provider value={[hvzUser, setUser]}>
             {children}
         </UserContext.Provider>
