@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "../../UserProvider";
-import {useAuth0, withAuthenticationRequired} from "@auth0/auth0-react";
+import {withAuthenticationRequired} from "@auth0/auth0-react";
 
 function ProfilePage() {
     // @ts-ignore
@@ -14,9 +14,7 @@ function ProfilePage() {
             <p>Admin: {hvzUser.isAdmin ? "yes" : "no"}</p>
         </section>
     </>
-    : <>
-        <h1>LOADING</h1>
-    </>
+    : <h1>LOADING</h1>
 }
 
 export default withAuthenticationRequired(ProfilePage)
