@@ -1,9 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-import {Auth0Provider, useAuth0, User} from '@auth0/auth0-react';
+import {Auth0Provider, User} from '@auth0/auth0-react';
 import UserProvider from './UserProvider'
-
-import "./styles/app.css"
 
 import AdminPage from "./components/admin/AdminPage";
 import TitlePage from "./components/title/TitlePage";
