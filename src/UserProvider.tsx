@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {HvzUser} from "./App";
 import {useAuth0} from "@auth0/auth0-react";
 import checkIfAdmin from "./util/checkAdmin";
@@ -12,23 +12,21 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
 
     if (user && !hvzUser) {
         (async function() {
-            (await getAccessTokenSilently().then(token => {
+            const token = await getAccessTokenSilently()
+            
+            await fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
-                setUser({
-                    ...user,
-                    isAdmin: checkIfAdmin(token),
-                    token
-                });
-
-                fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-
-            }).catch(e => console.log(e)))
+            setUser({
+                ...user,
+                isAdmin: checkIfAdmin(token),
+                token
+            })
         })()
     }
 
