@@ -9,6 +9,7 @@ import HomePage from "./components/home/HomePage";
 
 import "./App.sass"
 import ProfilePage from "./components/profile/ProfilePage";
+import Navbar from './components/nav/Navbar';
 
 export interface HvzUser extends User {
     isAdmin: boolean,
@@ -24,6 +25,7 @@ function App() {
     scope="openid profile email">
 
       <UserProvider>
+        <Navbar/>
           <Router>
               <Routes>
                   <Route path="/" element={<TitlePage />} />
