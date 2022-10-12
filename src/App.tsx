@@ -25,8 +25,8 @@ function App() {
     scope="openid profile email">
 
       <UserProvider>
-        <Navbar/>
           <Router>
+              <Navbar/>
               <Routes>
                   <Route path="/" element={<TitlePage />} />
                   <Route path="/profile" element={<ProfilePage />} />
