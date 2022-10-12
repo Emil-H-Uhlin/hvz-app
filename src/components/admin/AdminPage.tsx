@@ -3,7 +3,7 @@ import {useContext} from "react";
 import {UserContext} from "../../UserProvider";
 import {Navigate} from "react-router-dom";
 
-export function AdminPage() {
+function AdminPage() {
     // @ts-ignore
     const [hvzUser] = useContext(UserContext)
 
