@@ -10,7 +10,7 @@ import HomePage from "./components/home/HomePage";
 
 import "./App.sass"
 import ProfilePage from "./components/profile/ProfilePage";
-import Navbar from './components/nav/Navbar';
+import Navbar from "./components/nav/Navbar"
 
 export interface HvzUser extends User {
     isAdmin: boolean,
@@ -30,17 +30,17 @@ function App() {
       <QueryClientProvider client={queryClient}>
           <UserProvider>
               <Router>
-                  <Navbar/>
+                  <Navbar />
                   <Routes>
-                      <Route path="/" element={<TitlePage/>}/>
-                      <Route path="/profile" element={<ProfilePage/>}/>
-                      <Route path="/home" element={<HomePage/>}/>
-                      <Route path="/admin" element={<AdminPage/>}/>
+                      <Route path="/" element={<TitlePage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/home" element={<HomePage />} />
+                      <Route path="/admin" element={<AdminPage />} />
                   </Routes>
               </Router>
           </UserProvider>
       </QueryClientProvider>
-    </Auth0Provider>
+  </Auth0Provider>
   </div>
 }
 
