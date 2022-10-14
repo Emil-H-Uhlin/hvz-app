@@ -30,23 +30,7 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
         })()
     }
 
-    function LogoutButton() {
-        const { logout } = useAuth0()
-        return <button onClick={() => {
-            logout({returnTo: window.location.origin})
-            setUser(null)
-        }}>Log out</button>
-    }
-
-    return <>
-        { !!hvzUser && <>
-            <LogoutButton />
-            <a href={"/profile"}>Profile</a>
-            {hvzUser.isAdmin && <a href={"/admin"}>Admin</a>}
-        </> }
-
-        <UserContext.Provider value={[hvzUser, setUser]}>
-            {children}
-        </UserContext.Provider>
-    </>
+    return <UserContext.Provider value={[hvzUser, setUser]}>
+        {children}
+    </UserContext.Provider>
 }

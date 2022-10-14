@@ -9,6 +9,7 @@ import HomePage from "./components/home/HomePage";
 
 import "./App.sass"
 import ProfilePage from "./components/profile/ProfilePage";
+import Navbar from './components/nav/Navbar';
 
 export interface HvzUser extends User {
     isAdmin: boolean,
@@ -25,6 +26,7 @@ function App() {
 
       <UserProvider>
           <Router>
+              <Navbar/>
               <Routes>
                   <Route path="/" element={<TitlePage />} />
                   <Route path="/profile" element={<ProfilePage />} />
