@@ -18,6 +18,7 @@ export default function Navbar() {
     }
 
     return <> { !!hvzUser && <div className="navbar">
+        <NavLink to={"/home"} className="navItem">Games</NavLink>
         <NavLink to={"/profile"} className="navItem">Profile</NavLink>
         { hvzUser.isAdmin && <NavLink to={"/admin"} className="navItem">Admin</NavLink> }
         <LogoutButton />
