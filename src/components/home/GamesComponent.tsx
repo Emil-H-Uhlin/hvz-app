@@ -1,29 +1,24 @@
 import { useContext, useEffect, useState } from "react"
-import { GameModel } from "../../models/GameModel"
-import { UserContext } from "../../UserProvider"
-import GamesListItem from "./GamesListItem"
+import {getAuthHeaders, UserContext} from "../../UserProvider"
+import {useQuery} from "react-query";
 
 export default function GamesComponent() {
     // @ts-ignore
     const [hvzUser] = useContext(UserContext)
-    const [games, setGames] = useState<JSX.Element[]>([])
-    
-    useEffect(() => {
-        
-        (async function() {
-            const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
-                headers: {
-                    "Content-Type" : "application/json",
-                    "Authorization": `Bearer ${hvzUser.token}`
-                }
-            })
 
-            setGames((await response.json()).map((g: GameModel) => <GamesListItem game={g} key={g.id}/>))
-        })()
+    // @ts-ignore
+    const { games, status } = useQuery("games", async function() {
+        const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(hvzUser)
+            }
+        })
 
-    }, [hvzUser])
-    
+        return response.json()
+    })
+
     return hvzUser && <>
-        { games }
+        { games && <p>{games.length}</p> }
     </>
 }
