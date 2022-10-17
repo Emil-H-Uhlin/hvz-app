@@ -15,7 +15,7 @@ export default function GamesListItem({game} : { game: GameModel }) {
             </p>
         </div>
         <aside>
-            <GameJoinPopup />
+            <GameJoinPopup game={game}/>
         </aside>
     </div>
 }
