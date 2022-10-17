@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {HvzUser} from "./App";
 import {useAuth0} from "@auth0/auth0-react";
-import checkIfAdmin from "./util/checkAdmin";
+import {checkIfAdmin} from "./Utils"
 import {useQuery} from "react-query";
 
 // @ts-ignore
@@ -20,7 +20,7 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
 
         setUser({
             ...user,
-            isAdmin: checkIfAdmin(token),
+            isAdmin: checkIfAdmin(token), 
             token
         })
 
