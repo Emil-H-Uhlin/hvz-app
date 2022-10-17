@@ -2,7 +2,8 @@ import {GameModel} from "../../../models/GameModel"
 import React from 'react'
 import Popup from 'reactjs-popup'
 
-export default function GameJoinPopup({game} : {game: GameModel}) {
+export default function GameJoinPopup(
+	{game, onClose} : {game: GameModel, onClose: (result: string) => void}) {
 
 	return <Popup trigger={<button>Join Game</button>}
 		modal
@@ -20,13 +21,18 @@ export default function GameJoinPopup({game} : {game: GameModel}) {
 
 					</div>
 					<div className="actions">
-						<Popup trigger={<button>Join as Human</button>}>
-
-						</Popup>
-						<Popup trigger={<button>Join as Zombie</button>}>
-							
-						</Popup>
-						<button onClick={close}>Cancel</button>
+						<button onClick={() => {
+							onClose("z")
+							close()
+						}}>Join as Zombie</button>
+						<button onClick={() => {
+							onClose("h")
+							close()
+						}}>Join as Human</button>
+						<button onClick={() => {
+							onClose("n")
+							close()
+						}}>Cancel</button>
 					</div>
 				</div>
 			)
