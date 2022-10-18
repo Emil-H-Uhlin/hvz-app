@@ -3,12 +3,16 @@ import React from 'react'
 import Popup from 'reactjs-popup'
 
 export default function GameJoinPopup(
-	{game, onClose} : {game: GameModel, onClose: (result: string) => void}) {
+	{game, onPopupClosed} : {game: GameModel, onPopupClosed: (result: string) => void}) {
 
 	return <Popup trigger={<button>Join Game</button>}
 		modal
-		nested
-		>
+		onClose={ (event: any) => {
+			if (!event || event.type !== "click") return
+
+			onPopupClosed(event.target.title)
+		}
+	}>
 		{ 	
 			// @ts-ignore
 			close => (
@@ -21,18 +25,9 @@ export default function GameJoinPopup(
 
 					</div>
 					<div className="actions">
-						<button onClick={() => {
-							onClose("z")
-							close()
-						}}>Join as Zombie</button>
-						<button onClick={() => {
-							onClose("h")
-							close()
-						}}>Join as Human</button>
-						<button onClick={() => {
-							onClose("n")
-							close()
-						}}>Cancel</button>
+						<button onClick={close} title="zombie">Join as Zombie</button>
+						<button onClick={close} title="human">Join as Human</button>
+						<button onClick={close}>Cancel</button>
 					</div>
 				</div>
 			)
