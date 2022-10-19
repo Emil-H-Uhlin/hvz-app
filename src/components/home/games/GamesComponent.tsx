@@ -8,6 +8,10 @@ export default function GamesComponent() {
     // @ts-ignore
     const [hvzUser] = useContext(UserContext)
 
+    function joinGame(game: GameModel, team: string) {
+        alert("joined " + game.gameName + " as " + team)
+    }
+    
     // @ts-ignore
     const { data, status } = useQuery("games", async function() {
         const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
@@ -17,7 +21,12 @@ export default function GamesComponent() {
             }
         })
 
-        return (await response.json()).map((game: GameModel) => <GamesListItem game={game} key={game.id} />)
+        return (await response.json()).map((game: GameModel) => 
+            <GamesListItem 
+                game={game} 
+                key={game.id} 
+                handleGameJoin={(team: string) => { joinGame(game, team) }}
+        />)
     })
 
     return hvzUser && <>
