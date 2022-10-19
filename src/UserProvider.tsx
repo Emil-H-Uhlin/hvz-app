@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {HvzUser} from "./App";
 import {useAuth0} from "@auth0/auth0-react";
-import checkIfAdmin from "./util/checkAdmin";
+import {checkIfAdmin} from "./Utils"
 import {useQuery} from "react-query";
 
 // @ts-ignore
@@ -20,12 +20,12 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
 
         setUser({
             ...user,
-            isAdmin: checkIfAdmin(token),
+            isAdmin: checkIfAdmin(token), 
             token
         })
 
         return await fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization" : `Bearer ${token}`
