@@ -8,8 +8,19 @@ export default function GamesComponent() {
     // @ts-ignore
     const [hvzUser] = useContext(UserContext)
 
-    function joinGame(game: GameModel, team: string) {
-        alert("joined " + game.gameName + " as " + team)
+    async function joinGame(game: GameModel, team: string) {
+        if (team !== "zombie" && team !== "human") return;
+        
+        const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}/players`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(hvzUser)
+            },
+            body: JSON.stringify({
+                "human": (team === "human") ? true : false
+            })
+        })
     }
     
     // @ts-ignore
@@ -21,11 +32,12 @@ export default function GamesComponent() {
             }
         })
 
-        return (await response.json()).map((game: GameModel) => 
-            <GamesListItem 
-                game={game} 
-                key={game.id} 
-                handleGameJoin={(team: string) => { joinGame(game, team) }}
+        return (await response.json()).map((game: GameModel) => <GamesListItem
+            game={game}
+            key={game.id}
+            handleGameJoin={
+                (team: string) => { joinGame(game, team) }
+            }
         />)
     })
 
