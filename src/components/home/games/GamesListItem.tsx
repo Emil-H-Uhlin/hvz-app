@@ -1,15 +1,12 @@
 
 import {GameModel} from "../../../models/GameModel"
-import React from 'react'
-import Popup from 'reactjs-popup'
+import React, {useState} from 'react'
 import GameJoinPopup from './GameJoinPopup'
 
 import "./games.sass"
 
-export default function GamesListItem({game} : { game: GameModel }) {
-    function handlePopup(result: string) {
-        console.log(result)
-    }
+export default function GamesListItem(
+    {game, handleGameJoin} : { game: GameModel, handleGameJoin: (team: string) => void }) {
 
     return <div className={"gamesListItem"}>
         <div>
@@ -19,7 +16,7 @@ export default function GamesListItem({game} : { game: GameModel }) {
             </p>
         </div>
         <aside>
-            <GameJoinPopup game={game} onClose={(result) => handlePopup(result)}/>
+            <GameJoinPopup game={game} onPopupClosed={(result: string) => handleGameJoin(result)}/>
         </aside>
     </div>
 }
