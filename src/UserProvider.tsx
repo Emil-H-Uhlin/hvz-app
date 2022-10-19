@@ -18,10 +18,19 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
     useQuery("users", async function() {
         const token = await getAccessTokenSilently()
 
-        setUser({
-            ...user,
-            isAdmin: checkIfAdmin(token), 
-            token
+        setUser(prevUser => {
+            if (prevUser === null) {
+                console.log("just logged in")
+            }
+            else if (prevUser.token === token) {
+                return prevUser
+            }
+
+            return {
+                ...user,
+                isAdmin: checkIfAdmin(token),
+                token
+            }
         })
 
         return await fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {

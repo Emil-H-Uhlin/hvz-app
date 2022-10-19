@@ -10,10 +10,8 @@ export default function GamesListItem(
 
     return <div className={"gamesListItem"}>
         <div>
-            <h2>{game.gameName}</h2>
-            <p>
-                Id={game.id}, Description='{game.description}'
-            </p>
+            <h2>{game.gameName} - ({game.playerCount}/{game.maxPlayers})</h2>
+            <span>{game.description}</span>
         </div>
         <aside>
             <GameJoinPopup game={game} onPopupClosed={(result: string) => handleGameJoin(result)}/>
