@@ -25,7 +25,7 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
         })
 
         return await fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization" : `Bearer ${token}`
