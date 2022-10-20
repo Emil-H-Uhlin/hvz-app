@@ -47,13 +47,15 @@ export default function GamesComponent() {
         })
 
         return [!!allGames && !!userGames 
-            ? allGames.filter((game: GameModel) => !userGames.includes(game)) 
+            ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel)=> aId === iId)) 
             : (allGames ?? []), userGames ?? []]
     }
 
     const [allGames, userGames] = useGameFetch()
 
     return hvzUser && <>
-        { /*data*/ }
+        { userGames.map((game: GameModel) => <GamesListItem game={game} key={game.id} handleGameJoin={(team: string) => joinGame(game, team)}/>) }
+        <hr/>
+        { allGames.map((game: GameModel) => <GamesListItem game={game} key={game.id}/>) }  
     </>
 }
