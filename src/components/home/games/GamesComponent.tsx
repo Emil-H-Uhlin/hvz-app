@@ -54,8 +54,17 @@ export default function GamesComponent() {
     const [allGames, userGames] = useGameFetch()
 
     return hvzUser && <>
-        { userGames.map((game: GameModel) => <GamesListItem game={game} key={game.id} handleGameJoin={(team: string) => joinGame(game, team)}/>) }
+        { userGames.map((game: GameModel) => <GamesListItem 
+            game={game} 
+            key={game.id}
+            joined={true} 
+            />)} 
         <hr/>
-        { allGames.map((game: GameModel) => <GamesListItem game={game} key={game.id}/>) }  
+        { allGames.map((game: GameModel) => <GamesListItem 
+            game={game} 
+            key={game.id} 
+            handleGameJoin={(team: string) => joinGame(game, team)}
+            joined={false}
+            />)}  
     </>
 }

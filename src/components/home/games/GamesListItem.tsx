@@ -6,7 +6,7 @@ import GameJoinPopup from './GameJoinPopup'
 import "./games.sass"
 
 export default function GamesListItem(
-    {game, handleGameJoin} : { game: GameModel, handleGameJoin?: (team: string) => void }) {
+    {game, handleGameJoin, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
 
     return <div className={"gamesListItem"}>
         <div>
@@ -14,7 +14,14 @@ export default function GamesListItem(
             <span>{game.description}</span>
         </div>
         <aside>
-            <GameJoinPopup game={game} onPopupClosed={(result: string) => handleGameJoin?.(result)}/>
+            { joined 
+                ? <>
+
+                </> 
+                : <>
+                    <GameJoinPopup game={game} onPopupClosed={(result: string) => handleGameJoin?.(result)}/>
+                </>
+            }            
         </aside>
     </div>
 }
