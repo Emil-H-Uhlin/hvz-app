@@ -46,7 +46,9 @@ export default function GamesComponent() {
             return await response.json()
         })
 
-        return [allGames, userGames]
+        return [!!allGames && !!userGames 
+            ? allGames.filter((game: GameModel) => !userGames.includes(game)) 
+            : (allGames ?? []), userGames ?? []]
     }
 
     const [allGames, userGames] = useGameFetch()
