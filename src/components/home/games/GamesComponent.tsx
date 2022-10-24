@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {useQuery} from "react-query";
-import {GameModel} from "../../../models/GameModel"
+import {GameModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
 
 export default function GamesComponent() {

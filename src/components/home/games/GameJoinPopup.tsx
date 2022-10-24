@@ -1,4 +1,4 @@
-import {GameModel} from "../../../models/GameModel"
+import {GameModel} from "../../../Models"
 import React from 'react'
 import Popup from 'reactjs-popup'
 
