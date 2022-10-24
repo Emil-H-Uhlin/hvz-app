@@ -7,6 +7,7 @@ import {QueryClientProvider, QueryClient} from "react-query";
 import AdminPage from "./components/admin/AdminPage";
 import TitlePage from "./components/title/TitlePage";
 import HomePage from "./components/home/HomePage";
+import KillPage from "./components/home/games/KillPage";
 
 import "./App.sass"
 import ProfilePage from "./components/profile/ProfilePage";
@@ -36,6 +37,7 @@ function App() {
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/home" element={<HomePage />} />
                       <Route path="/admin" element={<AdminPage />} />
+                      <Route path="/kill" element={<KillPage />} />
                   </Routes>
               </Router>
           </UserProvider>
