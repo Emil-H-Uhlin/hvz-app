@@ -39,12 +39,11 @@ export default function GamesListItem(
             { joined 
                 ? <>
                     <Popup trigger={<button>Show bitecode</button>} modal >
-                        <div style={{
-                            backgroundColor: "black",
-                            color: "white"
-                        }}>
-                            <span>{player?.biteCode}</span>
-                        </div>
+                        { player && <div className="bitecode-display">
+                            <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
+                                + `${process.env.REACT_APP_DOMAIN}/kill?bitecode=${player?.biteCode}`} />
+                            <p>{player.biteCode}</p>
+                        </div> }
                     </Popup>
                 </> 
                 : <>
