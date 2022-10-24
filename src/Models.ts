@@ -1,4 +1,3 @@
-
 export interface GameModel {
     id: number,
     gameName: string,
@@ -6,4 +5,11 @@ export interface GameModel {
     gameState: string,
     maxPlayers: number,
     playerCount: number
+}
+
+export interface PlayerModel {
+	id: number,
+	human: boolean,
+	patientZero: boolean,
+	biteCode: string
 }
