@@ -38,13 +38,19 @@ export default function GamesListItem(
         <aside>
             { joined 
                 ? <>
-                    <Popup trigger={<button>Show bitecode</button>} modal >
-                        { player && <div className="bitecode-display">
-                            <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
-                                + `${process.env.REACT_APP_DOMAIN}/kill?bitecode=${player?.biteCode}`} />
-                            <p>{player.biteCode}</p>
-                        </div> }
-                    </Popup>
+                    <div>
+                        <Popup trigger={<button>Show bitecode</button>} modal >
+                            { player && <div className="bitecode-display">
+                                <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
+                                    + `${process.env.REACT_APP_DOMAIN}/kill?`
+                                    + `bitecode=${player?.biteCode}&`
+                                    + `game_id=${game.id}`} />
+
+                                <p>{player.biteCode}</p>
+                            </div> }
+                        </Popup>
+                        {player?.human ? "HUMAN": "ZOMBIE"}
+                    </div>
                 </> 
                 : <>
                     <GameJoinPopup game={game} onPopupClosed={(result: string) => handleGameJoin?.(result)}/>
