@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {useQuery} from "react-query";
-import {GameModel} from "../../../models/GameModel"
+import {GameModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
 
 export default function GamesComponent() {
@@ -23,25 +23,48 @@ export default function GamesComponent() {
         })
     }
     
-    // @ts-ignore
-    const { data, status } = useQuery("games", async function() {
-        const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(hvzUser)
-            }
+    function useGameFetch() {
+        const { data : allGames } = useQuery<GameModel[]>("allGames", async function () {
+            const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(hvzUser)
+                }
+            })
+
+            return await response.json()
         })
 
-        return (await response.json()).map((game: GameModel) => <GamesListItem
-            game={game}
-            key={game.id}
-            handleGameJoin={
-                (team: string) => { joinGame(game, team) }
-            }
-        />)
-    })
+        const { data : userGames } = useQuery<GameModel[]>("userGames", async function() {
+            const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/currentUser/games`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(hvzUser)
+                }
+            })
+
+            return await response.json()
+        })
+
+        return [!!allGames && !!userGames 
+            ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel)=> aId === iId)) 
+            : (allGames ?? []), userGames ?? []]
+    }
+
+    const [allGames, userGames] = useGameFetch()
 
     return hvzUser && <>
-        { data }
+        { userGames.map((game: GameModel) => <GamesListItem 
+            game={game} 
+            key={game.id}
+            joined={true} 
+            />)} 
+        <hr/>
+        { allGames.map((game: GameModel) => <GamesListItem 
+            game={game} 
+            key={game.id} 
+            handleGameJoin={(team: string) => joinGame(game, team)}
+            joined={false}
+            />)}  
     </>
 }
