@@ -49,7 +49,8 @@ export default function GamesListItem(
                                 <p>{player.biteCode}</p>
                             </div> }
                         </Popup>
-                        {player?.human ? "HUMAN": "ZOMBIE"}
+                        <p>{player?.human ? "HUMAN": "ZOMBIE"}</p>
+                        <p>{game.gameState}</p>
                     </div>
                 </> 
                 : <>
