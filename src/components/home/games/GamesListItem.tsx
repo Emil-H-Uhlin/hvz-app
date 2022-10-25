@@ -43,8 +43,7 @@ export default function GamesListItem(
                             { player && <div className="bitecode-display">
                                 <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
                                     + `${process.env.REACT_APP_DOMAIN}/kill?`
-                                    + `bitecode=${player?.biteCode}&`
-                                    + `game_id=${game.id}`} />
+                                    + `bitecode=${player?.biteCode}`} />
 
                                 <p>{player.biteCode}</p>
                             </div> }
