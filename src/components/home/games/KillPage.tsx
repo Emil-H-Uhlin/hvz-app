@@ -23,8 +23,7 @@ function KillPage() {
 	async function submitKill(event: any) {
 		event.preventDefault()
 
-		const killurl = `${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${searchParams.get("game_id")}/kills`
-		const response = await fetch(killurl, {
+		const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/kills`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -33,7 +32,6 @@ function KillPage() {
 			body: JSON.stringify(formState)
 		})
 
-		console.log(killurl)
 		console.log(formState)
 	} 
 
