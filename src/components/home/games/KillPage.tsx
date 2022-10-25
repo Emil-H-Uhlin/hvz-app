@@ -32,7 +32,7 @@ function KillPage() {
 			body: JSON.stringify(formState)
 		})
 
-		console.log(formState)
+		navigate("/home")
 	} 
 
 	function handleOnChange(event: any) {
