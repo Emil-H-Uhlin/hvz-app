@@ -9,7 +9,7 @@ function AdminPage() {
 
     return !!hvzUser ? <>
             { hvzUser.isAdmin
-                ? <p>Some secret admin stuff</p>
+                ? <textarea>{hvzUser.token}</textarea>
                 : <Navigate replace to="/" />
             }
         </>
