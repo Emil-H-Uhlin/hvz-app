@@ -13,3 +13,10 @@ export interface PlayerModel {
 	patientZero: boolean,
 	biteCode: string
 }
+
+export interface KillModel {
+    victimBiteCode: string,
+    story: string, 
+    lat: number,
+    lng: number
+}
