@@ -33,7 +33,7 @@ export default function UserProvider ({ children }: {children: Array<JSX.Element
             }
         })
 
-        return await fetch(`${process.env.REACT_APP_AUTH0_AUDIENCE}register`, {
+        return await fetch(`${process.env.REACT_APP_HVZ_API_DOMAIN}/register`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
