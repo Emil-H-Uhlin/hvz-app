@@ -12,9 +12,9 @@ import "./games.sass"
 
 export default function GamesListItem(
     {game, handleGameJoin, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
-    
+
     // @ts-ignore
-    const [hvzUser] = useContext(UserContext)
+    const hvzUser = useContext(UserContext)
 
     const {data:player} = useQuery<PlayerModel | null>(`player-game${game.id}`, async function() {
 
@@ -23,7 +23,7 @@ export default function GamesListItem(
         const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}/currentUser/player`, {
             headers: {
                 "Content-Type": "application/json",
-                ...getAuthHeaders(hvzUser)
+                ...getAuthHeaders(hvzUser!)
             }
         })
 

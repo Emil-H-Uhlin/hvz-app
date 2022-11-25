@@ -6,7 +6,7 @@ import GamesListItem from "./GamesListItem";
 
 export default function GamesComponent() {
     // @ts-ignore
-    const [hvzUser] = useContext(UserContext)
+    const hvzUser = useContext(UserContext)
 
     async function joinGame(game: GameModel, team: string) {
         if (team !== "zombie" && team !== "human") return;
@@ -15,7 +15,7 @@ export default function GamesComponent() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...getAuthHeaders(hvzUser)
+                ...getAuthHeaders(hvzUser!)
             },
             body: JSON.stringify({
                 "human": (team === "human") ? true : false
@@ -28,7 +28,7 @@ export default function GamesComponent() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
                 headers: {
                     "Content-Type": "application/json",
-                    ...getAuthHeaders(hvzUser)
+                    ...getAuthHeaders(hvzUser!)
                 }
             })
 
@@ -39,7 +39,7 @@ export default function GamesComponent() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/currentUser/games`, {
                 headers: {
                     "Content-Type": "application/json",
-                    ...getAuthHeaders(hvzUser)
+                    ...getAuthHeaders(hvzUser!)
                 }
             })
 

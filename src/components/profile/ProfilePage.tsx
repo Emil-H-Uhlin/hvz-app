@@ -4,7 +4,7 @@ import {withAuthenticationRequired} from "@auth0/auth0-react";
 
 function ProfilePage() {
     // @ts-ignore
-    const [hvzUser] = useContext(UserContext)
+    const hvzUser = useContext(UserContext)
 
     return !!hvzUser ? <>
         <h1>Profile</h1>

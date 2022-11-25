@@ -5,7 +5,7 @@ import {Navigate} from "react-router-dom";
 
 function AdminPage() {
     // @ts-ignore
-    const [hvzUser] = useContext(UserContext)
+    const hvzUser = useContext(UserContext)
 
     return !!hvzUser ? <>
             { hvzUser.isAdmin
