@@ -6,14 +6,13 @@ import {useAuth0} from "@auth0/auth0-react";
 
 export default function Navbar() {
     // @ts-ignore
-    const [hvzUser, setUser] = useContext(UserContext)
+    const hvzUser = useContext(UserContext)
 
     function LogoutButton() {
         const { logout } = useAuth0()
 
         return <button onClick={() => {
             logout({returnTo: window.location.ancestorOrigins[0]})
-            setUser(null)
         }} className="logoutButton navItem">Log out</button>
     }
 

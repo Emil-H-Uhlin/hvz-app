@@ -8,7 +8,7 @@ import {KillModel} from "../../../Models"
 
 function KillPage() {
 	// @ts-ignore
-	const [hvzUser] = useContext(UserContext)
+	const {hvzUser} = useContext(UserContext)
 
 	const [searchParams] = useSearchParams()
 	const navigate = useNavigate()
