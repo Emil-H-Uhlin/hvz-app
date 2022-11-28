@@ -25,6 +25,13 @@ export default function GamesComponent() {
         if (response.ok) refetchGames();
         else console.log(response)
     }
+
+    function gamesSorter(game1: GameModel, game2: GameModel): number {
+        if (game1.playerCount === game2.playerCount)
+            return game1.id > game2.id ? -1: 1;
+
+        return game1.playerCount > game2.playerCount ? -1: 1
+    }
     
     function useGameFetch() {
         const { data : allGames, refetch : refetchAll } = useQuery<GameModel[]>("allGames", async function () {
@@ -64,17 +71,23 @@ export default function GamesComponent() {
     const {games:[filteredGames, userGames], refetchGames} = useGameFetch()
 
     return hvzUser && <>
-        { userGames.map((game: GameModel) => <GamesListItem
-            game={game}
-            key={game.id}
-            joined={true}
-        />)}
-        { filteredGames.length > 0 && <hr/>}
-        { filteredGames.map((game: GameModel) => <GamesListItem
-            game={game} 
-            key={game.id} 
-            handleGameJoin={(team: string) => joinGame(game, team)}
-            joined={false}
-        />)}
+        { userGames.length > 0 && <>
+            <h1>Your games</h1>
+            { userGames.map((game: GameModel) => <GamesListItem
+                game={game}
+                key={game.id}
+                joined={true}
+            />)}
+        </> }
+        { userGames.length > 0 && filteredGames.length > 0 && <hr/>}
+        { filteredGames.length > 0 && <>
+            <h1>All games</h1>
+            { filteredGames.sort(gamesSorter).map((game: GameModel) => <GamesListItem
+                game={game}
+                key={game.id}
+                handleGameJoin={(team: string) => joinGame(game, team)}
+                joined={false}
+            />)}
+        </> }
     </>
 }
