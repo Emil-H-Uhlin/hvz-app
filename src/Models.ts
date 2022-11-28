@@ -1,8 +1,10 @@
+import {GameState} from "./Utils"
+
 export interface GameModel {
     id: number,
     gameName: string,
     description: string,
-    gameState: string,
+    gameState: GameState,
     maxPlayers: number,
     playerCount: number
 }

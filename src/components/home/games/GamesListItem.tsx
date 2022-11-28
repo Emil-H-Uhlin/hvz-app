@@ -1,8 +1,8 @@
 
 import {GameModel, PlayerModel} from "../../../Models"
+import {GameState} from "../../../Utils";
 
-import React, {useContext} from 'react'
-import GameJoinPopup from './GameJoinPopup'
+import React, {FormEvent, useContext, useState} from 'react'
 import Popup from 'reactjs-popup'
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 
@@ -13,10 +13,12 @@ import "./games.sass"
 export default function GamesListItem(
     {game, handleGameJoin, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
 
+    const [open, setOpen] = useState(false)
+
     // @ts-ignore
     const hvzUser = useContext(UserContext)
 
-    const {data:player} = useQuery<PlayerModel | null>(`player-game${game.id}`, async function() {
+    const {data:player} = useQuery<PlayerModel>(`player-game${game.id}`, async function() {
 
         if (!joined) return null;
 
@@ -30,32 +32,57 @@ export default function GamesListItem(
         return await response.json()
     })
 
-    return <div className={"gamesListItem"}>
-        <div>
-            <h2>{game.gameName} - ({game.playerCount}/{game.maxPlayers})</h2>
-            <span>{game.description}</span>
-        </div>
-        <aside>
-            { joined 
-                ? <>
-                    <div>
-                        <Popup trigger={<button>Show bitecode</button>} modal >
-                            { player && <div className="bitecode-display">
-                                <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
-                                    + `${process.env.REACT_APP_DOMAIN}/kill?`
-                                    + `bitecode=${player?.biteCode}`} />
+    function handleBitecodeInput(event: FormEvent<HTMLFormElement>) {
+        console.log(event)
 
-                                <p>{player.biteCode}</p>
-                            </div> }
-                        </Popup>
-                        <p>{player?.human ? "HUMAN": "ZOMBIE"}</p>
-                        <p>{game.gameState}</p>
+        event.preventDefault()
+    }
+
+    return <div className="gamesListItem" onClick={_ => setOpen(true)}>
+        <div className="gameInfo">
+            <h2>{game.gameName}</h2>
+            <span id="g_desc">{game.description} </span>
+            <span id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </span>
+            <span id="g_state">State: {GameState[game.gameState]} </span>
+            { joined && <span id="g_team">Team: {player?.human ? "humans": "zombies" } </span> }
+        </div>
+        { joined
+            ? <Popup open={open} modal onClose={_ => setOpen(false)} >
+                { player && player.human
+                    ? <div className="bitecode-display">
+                        <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
+                            + `${process.env.REACT_APP_DOMAIN}/kill?`
+                            + `bitecode=${player?.biteCode}`}/>
+
+                        <p>{player.biteCode}</p>
                     </div>
-                </> 
-                : <>
-                    <GameJoinPopup game={game} onPopupClosed={(result: string) => handleGameJoin?.(result)}/>
-                </>
-            }            
-        </aside>
+                    : <div className="zombie-display">
+                        <p>Use your camera app to scan human bitecode!</p>
+                        <p>Alternatively - manually enter their bitecode: </p>
+                        <form onSubmit={e => handleBitecodeInput(e)}>
+                            <input type="text"></input>
+                            <button type="submit">Submit kill</button>
+                        </form>
+                    </div>
+                }
+            </Popup>
+            : <Popup open={open} modal onClose={_ => setOpen(false)} >
+                {   // @ts-ignore
+                    close => (
+                        <div className="joinPopup">
+                            <button onClick={e => {
+                                handleGameJoin!("zombie")
+                                close(e)
+                            }}>Join as Zombie</button>
+                            <button onClick={e => {
+                                handleGameJoin!("human")
+                                close(e)
+                            }}>Join as Human</button>
+                            <button onClick={close}>Cancel</button>
+                        </div>
+                    )
+                }
+            </Popup>
+        }
     </div>
 }

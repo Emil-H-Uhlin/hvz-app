@@ -3,6 +3,7 @@ import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {useQuery} from "react-query";
 import {GameModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
+import {strToGameState} from "../../../Utils";
 
 export default function GamesComponent() {
     // @ts-ignore
@@ -25,6 +26,20 @@ export default function GamesComponent() {
         if (response.ok) refetchGames();
         else console.log(response)
     }
+
+    function gamesSorter(game1: GameModel, game2: GameModel): number {
+        let sort = 0
+
+        if (game1.gameState !== game2.gameState)
+            sort += game1.gameState > game2.gameState ? -2: 2
+
+        if (game1.playerCount === game2.playerCount)
+            sort += game1.id > game2.id ? -1: 1;
+        else
+            sort += game1.playerCount > game2.playerCount ? -1: 1
+
+        return sort
+    }
     
     function useGameFetch() {
         const { data : allGames, refetch : refetchAll } = useQuery<GameModel[]>("allGames", async function () {
@@ -35,7 +50,10 @@ export default function GamesComponent() {
                 }
             })
 
-            return await response.json()
+            return (await response.json()).map((it:any) => { return {
+                ...it,
+                "gameState": strToGameState(it.gameState)
+            }})
         })
 
         const { data : userGames, refetch : refetchUser } = useQuery<GameModel[]>("userGames", async function() {
@@ -46,12 +64,15 @@ export default function GamesComponent() {
                 }
             })
 
-            return await response.json()
+            return (await response.json()).map((it:any) => { return {
+                ...it,
+                "gameState": strToGameState(it.gameState)
+            }})
         })
 
         return {
             games: [!!allGames && !!userGames
-                ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel)=> aId === iId))
+                ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel) => aId === iId))
                 : (allGames ?? [])
                 , userGames ?? []],
             refetchGames: async function() {
@@ -64,17 +85,26 @@ export default function GamesComponent() {
     const {games:[filteredGames, userGames], refetchGames} = useGameFetch()
 
     return hvzUser && <>
-        { userGames.map((game: GameModel) => <GamesListItem
-            game={game}
-            key={game.id}
-            joined={true}
-        />)}
-        { filteredGames.length > 0 && <hr/>}
-        { filteredGames.map((game: GameModel) => <GamesListItem
-            game={game} 
-            key={game.id} 
-            handleGameJoin={(team: string) => joinGame(game, team)}
-            joined={false}
-        />)}
+        { userGames.length > 0 && <>
+            <h1>Joined games</h1>
+            <div>
+                { userGames.map((game: GameModel) => <GamesListItem
+                    game={game}
+                    key={game.id}
+                    joined={true}
+                />)}
+            </div>
+        </> }
+        { filteredGames.length > 0 && <>
+            <h1>All games</h1>
+            <div>
+                { filteredGames.sort(gamesSorter).map((game: GameModel) => <GamesListItem
+                    game={game}
+                    key={game.id}
+                    handleGameJoin={(team: string) => joinGame(game, team)}
+                    joined={false}
+                />)}
+            </div>
+        </> }
     </>
 }
