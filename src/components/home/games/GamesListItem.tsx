@@ -32,8 +32,8 @@ export default function GamesListItem(
     })
 
     return <div className="gamesListItem" onClick={_ => setOpen(true)}>
-        <h2>{game.gameName}</h2>
         <div className="gameInfo">
+            <h2>{game.gameName}</h2>
             <span id="g_desc">{game.description} </span>
             <span id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </span>
             <span id="g_state">State: {game.gameState[0] + game.gameState.substring(1).toLowerCase()} </span>
