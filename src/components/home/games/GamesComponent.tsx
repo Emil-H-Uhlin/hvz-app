@@ -3,6 +3,7 @@ import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {useQuery} from "react-query";
 import {GameModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
+import {strToGameState} from "../../../Utils";
 
 export default function GamesComponent() {
     // @ts-ignore
@@ -42,7 +43,10 @@ export default function GamesComponent() {
                 }
             })
 
-            return await response.json()
+            return (await response.json()).map((it:any) => { return {
+                ...it,
+                "gameState": strToGameState(it.gameState)
+            }})
         })
 
         const { data : userGames, refetch : refetchUser } = useQuery<GameModel[]>("userGames", async function() {
@@ -53,12 +57,15 @@ export default function GamesComponent() {
                 }
             })
 
-            return await response.json()
+            return (await response.json()).map((it:any) => { return {
+                ...it,
+                "gameState": strToGameState(it.gameState)
+            }})
         })
 
         return {
             games: [!!allGames && !!userGames
-                ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel)=> aId === iId))
+                ? allGames.filter(({id:aId}: GameModel) => userGames.some(({id:iId}: GameModel) => aId !== iId))
                 : (allGames ?? [])
                 , userGames ?? []],
             refetchGames: async function() {

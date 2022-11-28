@@ -1,5 +1,6 @@
 
 import {GameModel, PlayerModel} from "../../../Models"
+import {GameState} from "../../../Utils";
 
 import React, {useContext, useState} from 'react'
 import Popup from 'reactjs-popup'
@@ -36,7 +37,7 @@ export default function GamesListItem(
             <h2>{game.gameName}</h2>
             <span id="g_desc">{game.description} </span>
             <span id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </span>
-            <span id="g_state">State: {game.gameState[0] + game.gameState.substring(1).toLowerCase()} </span>
+            <span id="g_state">State: {GameState[game.gameState]} </span>
             { joined && <span id="g_team">Team: {player?.human ? "humans": "zombies" } </span> }
         </div>
         { joined
