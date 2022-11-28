@@ -1,8 +1,7 @@
 import jwtDecode from 'jwt-decode'
-import {Exception} from "sass";
 
 export enum GameState {
-    Registering, Playing, Completed
+    Completed, Registering, Playing
 }
 
 export function checkIfAdmin(token: string) {

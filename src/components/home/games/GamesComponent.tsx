@@ -28,10 +28,17 @@ export default function GamesComponent() {
     }
 
     function gamesSorter(game1: GameModel, game2: GameModel): number {
-        if (game1.playerCount === game2.playerCount)
-            return game1.id > game2.id ? -1: 1;
+        let sort = 0
 
-        return game1.playerCount > game2.playerCount ? -1: 1
+        if (game1.gameState !== game2.gameState)
+            sort += game1.gameState > game2.gameState ? -2: 2
+
+        if (game1.playerCount === game2.playerCount)
+            sort += game1.id > game2.id ? -1: 1;
+        else
+            sort += game1.playerCount > game2.playerCount ? -1: 1
+
+        return sort
     }
     
     function useGameFetch() {
@@ -65,7 +72,7 @@ export default function GamesComponent() {
 
         return {
             games: [!!allGames && !!userGames
-                ? allGames.filter(({id:aId}: GameModel) => userGames.some(({id:iId}: GameModel) => aId !== iId))
+                ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel) => aId === iId))
                 : (allGames ?? [])
                 , userGames ?? []],
             refetchGames: async function() {
