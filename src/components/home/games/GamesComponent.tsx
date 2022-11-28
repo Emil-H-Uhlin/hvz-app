@@ -87,20 +87,24 @@ export default function GamesComponent() {
     return hvzUser && <>
         { userGames.length > 0 && <>
             <h1>Joined games</h1>
-            { userGames.map((game: GameModel) => <GamesListItem
-                game={game}
-                key={game.id}
-                joined={true}
-            />)}
+            <div>
+                { userGames.map((game: GameModel) => <GamesListItem
+                    game={game}
+                    key={game.id}
+                    joined={true}
+                />)}
+            </div>
         </> }
         { filteredGames.length > 0 && <>
             <h1>All games</h1>
-            { filteredGames.sort(gamesSorter).map((game: GameModel) => <GamesListItem
-                game={game}
-                key={game.id}
-                handleGameJoin={(team: string) => joinGame(game, team)}
-                joined={false}
-            />)}
+            <div>
+                { filteredGames.sort(gamesSorter).map((game: GameModel) => <GamesListItem
+                    game={game}
+                    key={game.id}
+                    handleGameJoin={(team: string) => joinGame(game, team)}
+                    joined={false}
+                />)}
+            </div>
         </> }
     </>
 }

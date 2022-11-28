@@ -2,7 +2,7 @@
 import {GameModel, PlayerModel} from "../../../Models"
 import {GameState} from "../../../Utils";
 
-import React, {useContext, useState} from 'react'
+import React, {FormEvent, useContext, useState} from 'react'
 import Popup from 'reactjs-popup'
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 
@@ -18,7 +18,7 @@ export default function GamesListItem(
     // @ts-ignore
     const hvzUser = useContext(UserContext)
 
-    const {data:player} = useQuery<PlayerModel | null>(`player-game${game.id}`, async function() {
+    const {data:player} = useQuery<PlayerModel>(`player-game${game.id}`, async function() {
 
         if (!joined) return null;
 
@@ -32,6 +32,12 @@ export default function GamesListItem(
         return await response.json()
     })
 
+    function handleBitecodeInput(event: FormEvent<HTMLFormElement>) {
+        console.log(event)
+
+        event.preventDefault()
+    }
+
     return <div className="gamesListItem" onClick={_ => setOpen(true)}>
         <div className="gameInfo">
             <h2>{game.gameName}</h2>
@@ -42,13 +48,23 @@ export default function GamesListItem(
         </div>
         { joined
             ? <Popup open={open} modal onClose={_ => setOpen(false)} >
-                { player && <div className="bitecode-display">
-                    <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
-                        + `${process.env.REACT_APP_DOMAIN}/kill?`
-                        + `bitecode=${player?.biteCode}`}/>
+                { player && player.human
+                    ? <div className="bitecode-display">
+                        <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
+                            + `${process.env.REACT_APP_DOMAIN}/kill?`
+                            + `bitecode=${player?.biteCode}`}/>
 
-                    <p>{player.biteCode}</p>
-                </div> }
+                        <p>{player.biteCode}</p>
+                    </div>
+                    : <div className="zombie-display">
+                        <p>Use your camera app to scan human bitecode!</p>
+                        <p>Alternatively - manually enter their bitecode: </p>
+                        <form onSubmit={e => handleBitecodeInput(e)}>
+                            <input type="text"></input>
+                            <button type="submit">Submit kill</button>
+                        </form>
+                    </div>
+                }
             </Popup>
             : <Popup open={open} modal onClose={_ => setOpen(false)} >
                 {   // @ts-ignore
