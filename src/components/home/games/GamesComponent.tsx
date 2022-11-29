@@ -50,10 +50,7 @@ export default function GamesComponent() {
                 }
             })
 
-            return (await response.json()).map((it:any) => { return {
-                ...it,
-                "gameState": strToGameState(it.gameState)
-            }})
+            return await response.json()
         })
 
         const { data : userGames, refetch : refetchUser } = useQuery<GameModel[]>("userGames", async function() {
@@ -64,10 +61,7 @@ export default function GamesComponent() {
                 }
             })
 
-            return (await response.json()).map((it:any) => { return {
-                ...it,
-                "gameState": strToGameState(it.gameState)
-            }})
+            return await response.json()
         })
 
         return {
