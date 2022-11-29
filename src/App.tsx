@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import {BrowserRouter as Router, Routes, Route, Outlet, Navigate} from 'react-router-dom'
 
 import {Auth0Provider, User} from '@auth0/auth0-react';
 import UserProvider from './UserProvider'
@@ -8,6 +8,7 @@ import AdminPage from "./components/admin/AdminPage";
 import TitlePage from "./components/title/TitlePage";
 import HomePage from "./components/home/HomePage";
 import KillPage from "./components/home/games/KillPage";
+import GamePage from "./components/home/games/GamePage";
 
 import "./App.sass"
 import ProfilePage from "./components/profile/ProfilePage";
@@ -33,11 +34,15 @@ function App() {
               <Router>
                   <Navbar />
                   <Routes>
-                      <Route path="/" element={<TitlePage />} />
+                      <Route index path="/" element={<TitlePage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/home" element={<HomePage />} />
                       <Route path="/admin" element={<AdminPage />} />
                       <Route path="/kill" element={<KillPage />} />
+                      <Route path="/games" element={<Outlet /> }>
+                          <Route path="/games/" element={<Navigate replace to="/home" /> } />
+                          <Route path="/games/:id" element={<GamePage /> } />
+                      </Route>
                   </Routes>
               </Router>
           </UserProvider>
