@@ -2,7 +2,10 @@ import {useQuery} from "react-query";
 import {useParams} from 'react-router'
 import {getAuthHeaders, UserContext} from "../../../UserProvider";
 import React, {FormEvent, useContext} from "react";
-import {GameModel, PlayerModel} from "../../../Models";
+import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
+import {MapContainer, TileLayer, Marker, Circle, Rectangle} from "react-leaflet";
+
+import 'leaflet/dist/leaflet.css'
 
 export default function GamePage() {
     // @ts-ignore
@@ -24,7 +27,7 @@ export default function GamePage() {
                 }
             })
 
-            return await response.json()
+            return jsonToGameModel(await response.json())
         }, {
             enabled: hvzUser !== null,
         })
@@ -48,6 +51,7 @@ export default function GamePage() {
 
     const [game, player] = useGameFetch()
 
+    // @ts-ignore
     return hvzUser && <>
         { !!game
             ? <>
@@ -79,7 +83,22 @@ export default function GamePage() {
                         <li>Game state: {game.gameState}</li>
                     </ul>
                 </div>
-                {/* map display */}
+                <div className="leaflet-container">
+                    <MapContainer
+                        //@ts-ignore
+                        center={[(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2]}
+                        zoom={15}
+                        scrollWheelZoom={false}
+                    >
+                        <TileLayer
+                            //@ts-ignore
+                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+
+                        <Rectangle bounds={[game.nw, game.se]} />
+                    </MapContainer>
+                </div>
             </>
             : <div>error loading game. return to home page?</div>
         }
