@@ -38,12 +38,12 @@ export default function GamesListItem(
         event.preventDefault()
     }
 
-    return <div className="gamesListItem" onClick={_ => setOpen(true)}>
-        <div className="gameInfo">
-            <a href={`/games/${game.id}`}><h2>{game.gameName}</h2></a>
+    return <div className="gamesListItem">
+        <a href={`/games/${game.id}`}><h2>{game.gameName}</h2></a>
+        <div className="gameInfo" onClick={_ => setOpen(true)}>
             <span id="g_desc">{game.description} </span>
             <span id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </span>
-            <span id="g_state">State: {GameState[game.gameState]} </span>
+            <span id="g_state">State: {game.gameState} </span>
             { joined && <span id="g_team">Team: {player?.human ? "humans": "zombies" } </span> }
         </div>
         { joined
