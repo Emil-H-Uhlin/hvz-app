@@ -40,7 +40,7 @@ export default function GamesListItem(
 
     return <div className="gamesListItem" onClick={_ => setOpen(true)}>
         <div className="gameInfo">
-            <h2>{game.gameName}</h2>
+            <a href={`/games/${game.id}`}><h2>{game.gameName}</h2></a>
             <span id="g_desc">{game.description} </span>
             <span id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </span>
             <span id="g_state">State: {GameState[game.gameState]} </span>
