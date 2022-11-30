@@ -28,57 +28,41 @@ export default function GamesListItem(
         enabled: joined
     })
 
-    function handleBitecodeInput(event: FormEvent<HTMLFormElement>) {
-        console.log(event)
+    function InitMap() {
+        const map = useMap()
+        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
 
-        event.preventDefault()
+        // disable movement and zooming
+        map.dragging.disable()
+        map.boxZoom.disable()
+        map.doubleClickZoom.disable()
+        map.zoomControl.remove()
+
+        map.attributionControl.addAttribution('&copy; ' +
+            '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
+            'contributors')
+
+        return <>
+        </>
     }
 
-    return <div className="gamesListItem">
-        <a href={`/games/${game.id}`}><h2>{game.gameName}</h2></a>
-        <div className="gameInfo" onClick={_ => setOpen(true)}>
-            <span id="g_desc">{game.description} </span>
-            <span id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </span>
-            <span id="g_state">State: {game.gameState} </span>
-            { joined && <span id="g_team">Team: {player?.human ? "humans": "zombies" } </span> }
-        </div>
-        { joined
-            ? <Popup open={open} modal onClose={_ => setOpen(false)} >
-                { player && player.human
-                    ? <div className="bitecode-display">
-                        <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
-                            + `${process.env.REACT_APP_DOMAIN}/kill?`
-                            + `bitecode=${player?.biteCode}`}/>
+    const goToGame = () => navigate(`/games/${game.id}`)
 
-                        <p>{player.biteCode}</p>
-                    </div>
-                    : <div className="zombie-display">
-                        <p>Use your camera app to scan human bitecode!</p>
-                        <p>Alternatively - manually enter their bitecode: </p>
-                        <form onSubmit={e => handleBitecodeInput(e)}>
-                            <input type="text"></input>
-                            <button type="submit">Submit kill</button>
-                        </form>
-                    </div>
-                }
-            </Popup>
-            : <Popup open={open} modal onClose={_ => setOpen(false)} >
-                {   // @ts-ignore
-                    close => (
-                        <div className="joinPopup">
-                            <button onClick={e => {
-                                handleGameJoin!("zombie")
-                                close(e)
-                            }}>Join as Zombie</button>
-                            <button onClick={e => {
-                                handleGameJoin!("human")
-                                close(e)
-                            }}>Join as Human</button>
-                            <button onClick={close}>Cancel</button>
-                        </div>
-                    )
-                }
-            </Popup>
-        }
+    return <div className="gamesListItem" onClick={_ => goToGame()} >
+        <div className="gameInfo" >
+            <h2>{game.gameName}</h2>
+            <p id="g_desc">{game.description} </p>
+            <ul>
+                <li id="g_player_count">Players: ({game.playerCount}/{game.maxPlayers}) </li>
+                <li id="g_state">State: {game.gameState} </li>
+                { joined && <li id="g_team">Team: {player?.human ? "humans": "zombies" } </li> }
+            </ul>
+        </div>
+        <div className="hvz-leaflet-preview">
+            <MapContainer>
+                <InitMap />
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            </MapContainer>
+        </div>
     </div>
 }
