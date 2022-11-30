@@ -3,7 +3,7 @@ import {useParams} from 'react-router'
 import {getAuthHeaders, UserContext} from "../../../UserProvider";
 import React, {FormEvent, useContext} from "react";
 import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
-import {MapContainer, TileLayer, Marker, Circle, Rectangle} from "react-leaflet";
+import {MapContainer, TileLayer, Marker, Circle, Rectangle, useMap} from "react-leaflet";
 
 import 'leaflet/dist/leaflet.css'
 
@@ -51,7 +51,20 @@ export default function GamePage() {
 
     const [game, player] = useGameFetch()
 
-    // @ts-ignore
+    function InitMap({game} : {game: GameModel}) {
+        const map = useMap()
+        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
+
+        map.doubleClickZoom.disable()
+
+        map.attributionControl.addAttribution('&copy; ' +
+            '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
+            'contributors')
+
+        return <>
+        </>
+    }
+
     return hvzUser && <>
         { !!game
             ? <>
@@ -83,19 +96,10 @@ export default function GamePage() {
                         <li>Game state: {game.gameState}</li>
                     </ul>
                 </div>
-                <div className="leaflet-container">
-                    <MapContainer
-                        //@ts-ignore
-                        center={[(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2]}
-                        zoom={15}
-                        scrollWheelZoom={false}
-                    >
-                        <TileLayer
-                            //@ts-ignore
-                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-
+                <div className="hvz-leaflet-container">
+                    <MapContainer>
+                        <InitMap game={game} />
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                         <Rectangle bounds={[game.nw, game.se]} />
                     </MapContainer>
                 </div>
