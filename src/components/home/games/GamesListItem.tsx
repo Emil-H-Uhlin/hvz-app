@@ -1,27 +1,21 @@
 
 import {GameModel, PlayerModel} from "../../../Models"
-import {GameState} from "../../../Utils";
-
-import React, {FormEvent, useContext, useState} from 'react'
-import Popup from 'reactjs-popup'
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
-
-import {useQuery} from "react-query";
-
 import "./games.sass"
 
+import React, {useContext} from 'react'
+import {useQuery} from "react-query";
+
+import {MapContainer, TileLayer, useMap} from "react-leaflet";
+import {useNavigate} from "react-router-dom";
+
 export default function GamesListItem(
-    {game, handleGameJoin, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
-
-    const [open, setOpen] = useState(false)
-
+    {game, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
+    const navigate = useNavigate()
     // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     const {data:player} = useQuery<PlayerModel>(`player-game${game.id}`, async function() {
-
-        if (!joined) return null;
-
         const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}/currentUser/player`, {
             headers: {
                 "Content-Type": "application/json",
@@ -30,6 +24,8 @@ export default function GamesListItem(
         })
 
         return await response.json()
+    }, {
+        enabled: joined
     })
 
     function handleBitecodeInput(event: FormEvent<HTMLFormElement>) {
