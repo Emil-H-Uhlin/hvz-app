@@ -1,13 +1,15 @@
-
 import {GameModel, PlayerModel} from "../../../Models"
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
-import "./games.sass"
+import {HvzMap} from "./GamePage";
 
 import React, {useContext} from 'react'
 import {useQuery} from "react-query";
+import {useNavigate} from "react-router";
 
-import {MapContainer, TileLayer, useMap} from "react-leaflet";
-import {useNavigate} from "react-router-dom";
+import {MapContainer} from "react-leaflet";
+import {Map} from 'leaflet'
+
+import "./games.sass"
 
 export default function GamesListItem(
     {game, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {

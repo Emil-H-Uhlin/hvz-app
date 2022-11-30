@@ -1,9 +1,12 @@
+import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
+import {getAuthHeaders, UserContext} from "../../../UserProvider";
+
+import React, {FormEvent, useContext, useEffect} from "react";
 import {useQuery} from "react-query";
 import {useParams} from 'react-router'
-import {getAuthHeaders, UserContext} from "../../../UserProvider";
-import React, {FormEvent, useContext, useEffect} from "react";
-import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
+
 import {MapContainer, TileLayer, Rectangle, useMap} from "react-leaflet";
+import {Map} from 'leaflet'
 
 import 'leaflet/dist/leaflet.css'
 
