@@ -1,9 +1,9 @@
 import {useQuery} from "react-query";
 import {useParams} from 'react-router'
 import {getAuthHeaders, UserContext} from "../../../UserProvider";
-import React, {FormEvent, useContext} from "react";
+import React, {FormEvent, useContext, useEffect} from "react";
 import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
-import {MapContainer, TileLayer, Marker, Circle, Rectangle, useMap} from "react-leaflet";
+import {MapContainer, TileLayer, Rectangle, useMap} from "react-leaflet";
 
 import 'leaflet/dist/leaflet.css'
 
@@ -41,29 +41,16 @@ export default function GamePage() {
                 }
             })
 
-            return await response.json()
+            return response.ok ? await response.json() : null
         }, {
             enabled: hvzUser !== null,
+            retry: 0
         })
 
         return [game, player]
     }
 
     const [game, player] = useGameFetch()
-
-    function InitMap({game} : {game: GameModel}) {
-        const map = useMap()
-        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
-
-        map.doubleClickZoom.disable()
-
-        map.attributionControl.addAttribution('&copy; ' +
-            '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
-            'contributors')
-
-        return <>
-        </>
-    }
 
     return hvzUser && <>
         { !!game
@@ -98,13 +85,30 @@ export default function GamePage() {
                 </div>
                 <div className="hvz-leaflet-container">
                     <MapContainer>
-                        <InitMap game={game} />
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                        <Rectangle bounds={[game.nw, game.se]} />
+                        <HvzMap game={game} />
                     </MapContainer>
                 </div>
             </>
             : <div>error loading game. return to home page?</div>
         }
         </>
+}
+
+function HvzMap({game} : {game: GameModel}) {
+    const map = useMap()
+
+    useEffect(() => {
+        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
+
+        map.doubleClickZoom.disable()
+
+        map.attributionControl.addAttribution('&copy; ' +
+            '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
+            'contributors')
+    }, [game, map])
+
+    return <>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Rectangle bounds={[game.nw, game.se]} />
+    </>
 }
