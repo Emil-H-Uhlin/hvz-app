@@ -30,24 +30,6 @@ export default function GamesListItem(
         enabled: joined
     })
 
-    function InitMap() {
-        const map = useMap()
-        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
-
-        // disable movement and zooming
-        map.dragging.disable()
-        map.boxZoom.disable()
-        map.doubleClickZoom.disable()
-        map.zoomControl.remove()
-
-        map.attributionControl.addAttribution('&copy; ' +
-            '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
-            'contributors')
-
-        return <>
-        </>
-    }
-
     const goToGame = () => navigate(`/games/${game.id}`)
 
     return <div className="gamesListItem" onClick={_ => goToGame()} >
@@ -62,8 +44,14 @@ export default function GamesListItem(
         </div>
         <div className="hvz-leaflet-preview">
             <MapContainer>
-                <InitMap />
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <HvzMap
+                    game={game}
+                    mapSetup={(map: Map) => {
+                        map.doubleClickZoom.disable()
+                        map.zoomControl.remove()
+                        map.boxZoom.disable()
+                        map.dragging.disable()
+                    }}/>
             </MapContainer>
         </div>
     </div>
