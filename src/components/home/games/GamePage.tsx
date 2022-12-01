@@ -1,9 +1,9 @@
 import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
 import {getAuthHeaders, UserContext} from "../../../UserProvider";
 
-import React, {FormEvent, useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {useQuery} from "react-query";
-import {useParams} from 'react-router'
+import {useNavigate, useParams} from 'react-router'
 
 import {MapContainer, TileLayer, Rectangle, useMap} from "react-leaflet";
 import {Map} from 'leaflet'
@@ -14,11 +14,13 @@ export default function GamePage() {
     // @ts-ignore
     const hvzUser = useContext(UserContext)
     const {id} = useParams()
+    const navigate = useNavigate()
 
-    function handleBitecodeInput(event: FormEvent<HTMLFormElement>) {
-        console.log(event)
+    const [biteCodeInput, updateInput] = useState("")
 
+    function handleBitecodeInput(event: any) {
         event.preventDefault()
+        navigate(`/kill/${biteCodeInput}`)
     }
 
     function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, () => void] {
@@ -99,7 +101,7 @@ export default function GamePage() {
                                 <p>Use your camera app to scan another human-team players bitecode!</p>
                                 <p>Alternatively - manually enter their bitecode: </p>
                                 <form onSubmit={e => handleBitecodeInput(e)}>
-                                    <input type="text"></input>
+                                    <input type="text" onChange={e => updateInput(e.target.value)}></input>
                                     <button type="submit">Submit kill</button>
                                 </form>
                             </div>)
