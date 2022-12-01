@@ -43,8 +43,8 @@ function KillPage() {
 
 		setFormState({
 			victimBiteCode: biteCode!,
-			lat: 0.0,
-			lng: 0.0,
+			lat: (game!.nw[0] + game!.se[0]) / 2,
+			lng: (game!.nw[1] + game!.se[1]) / 2,
 			story: ""
 		})
 
@@ -85,15 +85,16 @@ function KillPage() {
 			<fieldset>
 				<div>
 					<label>Longitude (x)</label>
-					<input type="number" name="lng" step="0.00005" value={formState.lng}/>
+					<input type="number" name="lng" step="0.00005" value={formState.lng} readOnly />
 				</div>
 				<div>
 					<label>Latitude (y)</label>
-					<input type="number" name="lat" step="0.00005" value={formState.lat}/>
+					<input type="number" name="lat" step="0.00005" value={formState.lat} readOnly />
 				</div>
 			</fieldset>
 				<button type="submit">Submit kill</button>
 		</form>
+		{ game &&
 		<div className="hvz-leaflet-container">
 			<MapContainer>
 				<HvzMap game={game!} mapSetup={(map: Map) => {
@@ -115,9 +116,9 @@ function KillPage() {
 					})
 				}}/>
 				<CircleMarker center={[formState.lat, formState.lng]} />
-				<Rectangle bounds={[game!.nw, game!.se]} />
+				<Rectangle bounds={[game.nw, game.se]} />
 			</MapContainer>
-		</div>
+		</div> }
 	</div>
 }
 
