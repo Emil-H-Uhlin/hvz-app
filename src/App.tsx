@@ -38,8 +38,11 @@ function App() {
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/home" element={<HomePage />} />
                       <Route path="/admin" element={<AdminPage />} />
-                      <Route path="/kill" element={<KillPage />} />
-                      <Route path="/games" element={<Outlet /> }>
+                      <Route path="/kill" element={<Outlet />} >
+                          <Route path="/kill/" element={<Navigate replace to="/home" />} />
+                          <Route path="/kill/:biteCode" element={<KillPage />} />
+                      </Route>
+                      <Route path="/games" element={<Outlet />}>
                           <Route path="/games/" element={<Navigate replace to="/home" /> } />
                           <Route path="/games/:id" element={<GamePage /> } />
                       </Route>
