@@ -18,11 +18,6 @@ export default function GamePage() {
 
     const [biteCodeInput, updateInput] = useState("")
 
-    function handleBitecodeInput(event: any) {
-        event.preventDefault()
-        navigate(`/kill/${biteCodeInput}`)
-    }
-
     function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, () => void] {
         const {data: game, refetch: refetchGame} = useQuery<GameModel>(`game-${id}`, async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}`, {
@@ -60,7 +55,6 @@ export default function GamePage() {
 
     const [game, player, refetch] = useGameFetch()
 
-
     function joinGame(human: boolean) {
         return fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/players`, {
             method: "POST",
@@ -84,6 +78,11 @@ export default function GamePage() {
         if (response.ok) await refetch()
     }
 
+    function handleBitecodeInput(event: any) {
+        event.preventDefault()
+        navigate(`/kill/${biteCodeInput} ${game!.id}`)
+    }
+
     return hvzUser && <>
         { !!game
             ? <>
@@ -93,7 +92,8 @@ export default function GamePage() {
                             ? <div className="bitecode-display">
                                 <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
                                     + `${process.env.REACT_APP_DOMAIN}/kill/`
-                                    + `${player.biteCode}`}/>
+                                    + `${player.biteCode}`
+                                    + ` ${game.id}` }/>
                                 <p>{player.biteCode}</p>
                                 <p>Show this to zombies trying to kill you!</p>
                         </div>

@@ -1,15 +1,21 @@
+import {UserContext, getAuthHeaders} from '../../../UserProvider'
+import {GameModel, jsonToGameModel, KillModel} from "../../../Models"
+import {HvzMap} from "./GamePage";
+
+import React, {useContext, useEffect, useState} from 'react'
+import { useParams, useNavigate } from 'react-router'
+import {useQuery} from "react-query";
+
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 
-import { useParams, useNavigate } from 'react-router'
-import {useContext, useEffect, useState} from 'react'
-import {UserContext, getAuthHeaders} from '../../../UserProvider'
-import {KillModel} from "../../../Models"
+import {CircleMarker, MapContainer, Marker, Rectangle} from "react-leaflet";
+import {Map} from "leaflet";
 
 function KillPage() {
 	// @ts-ignore
 	const hvzUser = useContext(UserContext)
 
-	const { biteCode } = useParams()
+	const { biteCode, gameId } = useParams()
 	const navigate = useNavigate()
 
 	const [formState, setFormState] = useState<KillModel>({
@@ -19,17 +25,30 @@ function KillPage() {
 		story: ""
 	})
 
+	const {data: game} = useQuery<GameModel>(`kill-page-game${gameId}`, async function() {
+		const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${gameId}`, {
+			headers: {
+				"Content-Type": "application/json",
+				...getAuthHeaders(hvzUser!)
+			}
+		})
+
+		return jsonToGameModel(await response.json())
+	}, {
+		enabled: hvzUser !== null && gameId !== undefined
+	})
+
 	useEffect(function() {
-		if (biteCode === undefined) navigate("/home");
+		if (biteCode === undefined || gameId === undefined || game === undefined) navigate("/home");
 
 		setFormState({
 			victimBiteCode: biteCode!,
-			lat: 0.0,
-			lng: 0.0,
+			lat: (game!.nw[0] + game!.se[0]) / 2,
+			lng: (game!.nw[1] + game!.se[1]) / 2,
 			story: ""
 		})
 
-	}, [biteCode, navigate])
+	}, [biteCode, gameId, navigate, game])
 
 	async function submitKill(event: any) {
 		event.preventDefault()
@@ -65,16 +84,41 @@ function KillPage() {
 			</fieldset>
 			<fieldset>
 				<div>
-					<label>Latitude (x)</label>
-					<input type="number" name="lat" step="0.01" />
+					<label>Longitude (x)</label>
+					<input type="number" name="lng" step="0.00005" value={formState.lng} readOnly />
 				</div>
 				<div>
-					<label>Longitude (y)</label>
-					<input type="number" name="lng" step="0.01" />
+					<label>Latitude (y)</label>
+					<input type="number" name="lat" step="0.00005" value={formState.lat} readOnly />
 				</div>
 			</fieldset>
 				<button type="submit">Submit kill</button>
 		</form>
+		{ game &&
+		<div className="hvz-leaflet-container">
+			<MapContainer>
+				<HvzMap game={game!} mapSetup={(map: Map) => {
+					map.doubleClickZoom.disable()
+					map.dragging.disable()
+
+					map.removeEventListener("click") // clear click event to prevent multiple
+
+					map.addEventListener("click", ({latlng}) => {
+						setFormState((prev: KillModel) => {
+							const newState = {
+								...prev,
+								lat: latlng.lat,
+								lng: latlng.lng
+							}
+
+							return newState
+						})
+					})
+				}}/>
+				<CircleMarker center={[formState.lat, formState.lng]} />
+				<Rectangle bounds={[game.nw, game.se]} />
+			</MapContainer>
+		</div> }
 	</div>
 }
 
