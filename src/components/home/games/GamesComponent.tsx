@@ -1,9 +1,8 @@
 import { useContext } from "react"
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {useQuery} from "react-query";
-import {GameModel} from "../../../Models"
+import {GameModel, jsonToGameModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
-import {strToGameState} from "../../../Utils";
 
 export default function GamesComponent() {
     // @ts-ignore
@@ -50,7 +49,7 @@ export default function GamesComponent() {
                 }
             })
 
-            return await response.json()
+            return (await response.json()).map((it: any) => jsonToGameModel(it))
         })
 
         const { data : userGames, refetch : refetchUser } = useQuery<GameModel[]>("userGames", async function() {
@@ -61,7 +60,7 @@ export default function GamesComponent() {
                 }
             })
 
-            return await response.json()
+            return (await response.json()).map((it: any) => jsonToGameModel(it))
         })
 
         return {
