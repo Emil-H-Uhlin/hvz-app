@@ -50,6 +50,8 @@ export default function GamesListItem(
                         map.doubleClickZoom.disable()
                         map.zoomControl.remove()
                         map.boxZoom.disable()
+                        map.scrollWheelZoom.disable()
+
                         map.dragging.disable()
                     }}/>
             </MapContainer>
