@@ -1,4 +1,5 @@
 import {UserContext} from "../../UserProvider";
+import {GameModel} from "../../Models";
 
 import {useContext, useEffect} from "react";
 import {useQuery} from "react-query";
@@ -11,7 +12,7 @@ function AdminPage() {
     const hvzUser = useContext(UserContext)
     const navigate = useNavigate()
 
-    const {data: games} = useQuery("allGames")
+    const {data: games} = useQuery<GameModel[]>("allGames")
 
     useEffect(() => {
         if (!hvzUser || !hvzUser.isAdmin)
@@ -21,6 +22,7 @@ function AdminPage() {
 
     return hvzUser && <>
         <textarea>{hvzUser.token}</textarea>
+        { games?.map((it: GameModel) => <>game {it.id}</>) }
     </>
 }
 
