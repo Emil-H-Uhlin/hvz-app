@@ -6,6 +6,7 @@ import {useQuery} from "react-query";
 import {useNavigate} from "react-router";
 
 import { withAuthenticationRequired } from "@auth0/auth0-react"
+import GameEditListItem from "./GameEditListItem";
 
 function AdminPage() {
     // @ts-ignore
@@ -22,7 +23,7 @@ function AdminPage() {
 
     return hvzUser && <>
         <textarea>{hvzUser.token}</textarea>
-        { games?.map((it: GameModel) => <>game {it.id}</>) }
+        { games?.map((it: GameModel) => <GameEditListItem />) }
     </>
 }
 
