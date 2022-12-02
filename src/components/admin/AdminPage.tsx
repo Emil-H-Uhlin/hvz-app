@@ -1,12 +1,12 @@
 import {UserContext} from "../../UserProvider";
 import {GameModel} from "../../Models";
+import GameEditListItem from "./GameEditListItem";
 
 import {useContext, useEffect} from "react";
 import {useQuery} from "react-query";
 import {useNavigate} from "react-router";
 
 import { withAuthenticationRequired } from "@auth0/auth0-react"
-import GameEditListItem from "./GameEditListItem";
 
 function AdminPage() {
     // @ts-ignore
@@ -22,8 +22,10 @@ function AdminPage() {
     }, [hvzUser, games, navigate])
 
     return hvzUser && <>
-        <textarea>{hvzUser.token}</textarea>
-        { games?.map((it: GameModel) => <GameEditListItem />) }
+        <div>
+            { games?.map((it: GameModel) => <GameEditListItem game={it} key={it.id}/>) }
+        </div>
+        <textarea value={hvzUser.token} readOnly></textarea>
     </>
 }
 
