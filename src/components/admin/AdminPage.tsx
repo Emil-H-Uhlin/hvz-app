@@ -19,7 +19,7 @@ function AdminPage() {
         if (!hvzUser || !hvzUser.isAdmin)
             navigate("/home")
 
-    }, [hvzUser, games, navigate])
+    }, [hvzUser, navigate])
 
     return hvzUser && <>
         <div>
