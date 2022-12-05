@@ -135,7 +135,8 @@ export function HvzMap({game, mapSetup} : {game: GameModel, mapSetup: (map: Map)
     const map = useMap()
 
     useEffect(() => {
-        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
+        map.fitBounds([game.nw, game.se])
+
         map.attributionControl.addAttribution('&copy; ' +
             '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
             'contributors'
