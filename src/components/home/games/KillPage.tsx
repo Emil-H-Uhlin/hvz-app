@@ -97,7 +97,8 @@ function KillPage() {
 		{ game &&
 		<div className="hvz-leaflet-container">
 			<MapContainer>
-				<HvzMap game={game!} mapSetup={(map: Map) => {
+				<HvzMap mapSetup={(map: Map) => {
+					map.fitBounds([game.nw, game.se])
 					map.doubleClickZoom.disable()
 					map.dragging.disable()
 

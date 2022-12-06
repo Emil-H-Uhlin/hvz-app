@@ -119,7 +119,8 @@ export default function GamePage() {
                 </div>
                 <div className="hvz-leaflet-container">
                     <MapContainer>
-                        <HvzMap game={game} mapSetup={(map: Map) => {
+                        <HvzMap mapSetup={(map: Map) => {
+                            map.fitBounds([game.nw, game.se])
                             map.doubleClickZoom.disable()
                         }}/>
                         <Rectangle bounds={[game.nw, game.se]} />
@@ -131,19 +132,17 @@ export default function GamePage() {
         </>
 }
 
-export function HvzMap({game, mapSetup} : {game: GameModel, mapSetup: (map: Map) => void}) {
+export function HvzMap({mapSetup} : {mapSetup: (map: Map) => void}) {
     const map = useMap()
 
     useEffect(() => {
-        map.fitBounds([game.nw, game.se])
-
         map.attributionControl.addAttribution('&copy; ' +
             '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
             'contributors'
         )
 
         mapSetup(map)
-    }, [game, map, mapSetup])
+    }, [map])
 
     return <>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

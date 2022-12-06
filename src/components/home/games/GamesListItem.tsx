@@ -45,8 +45,9 @@ export default function GamesListItem(
         <div className="hvz-leaflet-preview">
             <MapContainer>
                 <HvzMap
-                    game={game}
                     mapSetup={(map: Map) => {
+                        map.fitBounds([game.nw, game.se])
+
                         map.doubleClickZoom.disable()
                         map.zoomControl.remove()
                         map.boxZoom.disable()

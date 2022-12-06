@@ -6,7 +6,7 @@ import {HvzMap} from "../home/games/GamePage";
 import React, {useContext, useRef, useState} from "react";
 
 import {MapContainer, Rectangle} from "react-leaflet";
-import {Map} from "leaflet";
+import {LeafletMouseEvent, Map} from "leaflet";
 
 import "./admin.sass"
 
@@ -36,6 +36,29 @@ export default function GameEditListItem({game} : {game: GameModel }) {
     }
 
     const reset = () => updateGame(game)
+
+    function selectCorner({originalEvent: {button: mouseButton}, latlng: {lat, lng} }: LeafletMouseEvent) {
+        if (mouseButton !== 1)
+            return
+
+        currentGame.current = {
+            ...currentGame.current,
+            [counter.current % 2 === 0 ? "se" : "nw"]: [lat, lng]
+        }
+
+        console.log("test")
+        // update state every two clicks (allowing the user to select both corners
+        if (counter.current % 2 !== 0) {
+            // ensure current game has been updated by waiting 100ms
+            (async function () {
+                await new Promise(resolve => setTimeout(resolve, 50))
+            })()
+
+            updateGame(currentGame.current)
+        }
+
+        counter.current++
+    }
 
     return <div>
         <form
@@ -87,30 +110,9 @@ export default function GameEditListItem({game} : {game: GameModel }) {
         <div className="hvz-leaflet-editor">
             <MapContainer>
                 <HvzMap
-                    game={updatedGame}
                     mapSetup={(map: Map) => {
-                        map.removeEventListener("mousedown")
-                        map.on("mousedown", ({originalEvent, latlng}) => {
-                            if (originalEvent.button !== 1)
-                                return
-
-                            currentGame.current = {
-                                ...currentGame.current,
-                                [counter.current % 2 === 0 ? "nw" : "se"]: [latlng.lat, latlng.lng]
-                            }
-
-                            // update state every two clicks (allowing the user to select both corners
-                            if (counter.current % 2 !== 0) {
-                                // ensure current game has been updated by waiting 100ms
-                                (async function () {
-                                    await new Promise(resolve => setTimeout(resolve, 100))
-                                })()
-
-                                updateGame(currentGame.current)
-                            }
-
-                            counter.current++
-                        })
+                        map.fitBounds([updatedGame.nw, updatedGame.se])
+                        map.on("mousedown", selectCorner)
                     }
                 }/>
                 <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
