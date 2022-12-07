@@ -1,9 +1,10 @@
 import {getAuthHeaders, UserContext} from "../../UserProvider";
-import {GameModel} from "../../Models";
+import {GameModel, MissionEditModel} from "../../Models";
 import {GameState} from "../../Utils";
-import {HvzMap} from "../home/games/GamePage";
+import {HvzMap, MissionMarker} from "../home/games/GamePage";
 
 import React, {useContext, useRef, useState} from "react";
+import {useQuery} from "react-query";
 
 import {MapContainer, Rectangle} from "react-leaflet";
 import {LeafletMouseEvent, Map} from "leaflet";
@@ -16,6 +17,18 @@ export default function GameEditListItem({game} : {game: GameModel }) {
 
     const currentGame = useRef<GameModel>(game)
     const counter = useRef<number>(0)
+
+    const {data: missions, isLoading} = useQuery<MissionEditModel[]>(`game-${game.id}-missions`,
+        async function() {
+        const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}/missions`, {
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(hvzUser!)
+            }
+        })
+
+        return await response.json()
+    })
 
     async function save() {
         const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}`, {
@@ -109,12 +122,21 @@ export default function GameEditListItem({game} : {game: GameModel }) {
         </form>
         <div className="hvz-leaflet-editor">
             <MapContainer>
-                <HvzMap
-                    mapSetup={(map: Map) => {
-                        map.fitBounds([updatedGame.nw, updatedGame.se])
-                        map.on("mousedown", selectCorner)
-                    }
-                }/>
+                { !isLoading &&
+                    <HvzMap
+                        mapSetup={(map: Map) => {
+                            map.fitBounds([updatedGame.nw, updatedGame.se])
+                            map.doubleClickZoom.disable()
+
+                            map.on("mousedown", selectCorner);
+
+                            for (const mission of missions!) {
+                                let m = MissionMarker(mission)
+                                m.addTo(map)
+                            }
+                        }
+                    }/>
+                }
                 <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
             </MapContainer>
         </div>
