@@ -14,7 +14,6 @@ import "./games.sass"
 export default function GamesListItem(
     {game, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
     const navigate = useNavigate()
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     const {data:player} = useQuery<PlayerModel>(`player-game${game.id}`, async function() {

@@ -12,8 +12,8 @@ import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import 'leaflet/dist/leaflet.css'
 
 export default function GamePage() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
+
     const {id} = useParams()
     const navigate = useNavigate()
 

@@ -4,7 +4,6 @@ import {UserContext} from "../../UserProvider";
 import GamesComponent from "./games/GamesComponent";
 
 function HomePage() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     return !!hvzUser ? <>

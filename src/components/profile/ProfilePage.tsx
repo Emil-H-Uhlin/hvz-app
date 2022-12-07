@@ -3,7 +3,6 @@ import { UserContext } from "../../UserProvider";
 import {withAuthenticationRequired} from "@auth0/auth0-react";
 
 function ProfilePage() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     return !!hvzUser ? <>

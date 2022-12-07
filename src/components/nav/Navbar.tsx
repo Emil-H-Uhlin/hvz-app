@@ -5,7 +5,6 @@ import {UserContext} from "../../UserProvider";
 import {useAuth0} from "@auth0/auth0-react";
 
 export default function Navbar() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     function LogoutButton() {

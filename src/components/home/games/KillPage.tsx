@@ -12,7 +12,6 @@ import {CircleMarker, MapContainer, Marker, Rectangle} from "react-leaflet";
 import {Map} from "leaflet";
 
 function KillPage() {
-	// @ts-ignore
 	const hvzUser = useContext(UserContext)
 
 	const { biteCode, gameId } = useParams()
