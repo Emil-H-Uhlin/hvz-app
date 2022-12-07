@@ -59,7 +59,6 @@ export default function GameEditListItem({game} : {game: GameModel }) {
             [counter.current % 2 === 0 ? "se" : "nw"]: [lat, lng]
         }
 
-        console.log("test")
         // update state every two clicks (allowing the user to select both corners
         if (counter.current % 2 !== 0) {
             // ensure current game has been updated by waiting 100ms
