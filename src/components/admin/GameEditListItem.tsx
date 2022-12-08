@@ -14,6 +14,7 @@ import "./admin.sass"
 export default function GameEditListItem({game} : {game: GameModel }) {
     const hvzUser = useContext(UserContext)
     const [updatedGame, updateGame] = useState<GameModel>(game)
+    const [showMap, __setMapVisibility] = useState(false)
 
     const currentGame = useRef<GameModel>(game)
     const counter = useRef<number>(0)
@@ -48,29 +49,26 @@ export default function GameEditListItem({game} : {game: GameModel }) {
         console.log(response)
     }
 
+    function mapModified(): boolean {
+        return JSON.stringify({
+            nw: game.nw, se: game.se
+        }) !== JSON.stringify({
+            nw: updatedGame.nw, se: updatedGame.se
+        })
+    }
+
     const reset = () => updateGame(game)
 
-    function selectCorner({originalEvent: {button: mouseButton}, latlng: {lat, lng} }: LeafletMouseEvent) {
-        if (mouseButton !== 1)
-            return
-
-        currentGame.current = {
-            ...currentGame.current,
+    function selectCorner({latlng: {lat, lng}}: LeafletMouseEvent) {
+        updateGame(prev => ({
+            ...prev,
             [counter.current % 2 === 0 ? "se" : "nw"]: [lat, lng]
-        }
-
-        // update state every two clicks (allowing the user to select both corners
-        if (counter.current % 2 !== 0) {
-            // ensure current game has been updated by waiting 100ms
-            (async function () {
-                await new Promise(resolve => setTimeout(resolve, 50))
-            })()
-
-            updateGame(currentGame.current)
-        }
+        }))
 
         counter.current++
     }
+
+    const toggleMapVisibility = () => __setMapVisibility(b => !b)
 
     return <div>
         <form
@@ -78,8 +76,7 @@ export default function GameEditListItem({game} : {game: GameModel }) {
                 e.preventDefault()
                 await save()
             }}
-            onReset={reset}
-        >
+            onReset={reset}>
             <input
                 type="number"
                 value={game.id}
@@ -119,25 +116,32 @@ export default function GameEditListItem({game} : {game: GameModel }) {
             <button type="submit">Save</button>
             <button type="reset">Reset</button>
         </form>
-        <div className="hvz-leaflet-editor">
-            <MapContainer>
-                { !isLoading &&
-                    <HvzMap
-                        mapSetup={(map: Map) => {
-                            map.fitBounds([updatedGame.nw, updatedGame.se])
-                            map.doubleClickZoom.disable()
+        { !isLoading &&
+            <>Toggle map display {mapModified() ? "(*)" : ""}:
+                <button onClick={_ => toggleMapVisibility()}>{showMap ? "Hide" : "Show"}</button>
+                <button onClick={_ => updateGame(prev => ({
+                    ...prev,
+                    nw: game.nw,
+                    se: game.se
+                })) } hidden={!mapModified()}>Reset map</button>
+                { showMap && <div className="hvz-leaflet-editor">
+                    <MapContainer>
+                        <HvzMap
+                            mapSetup={(map: Map) => {
+                                map.fitBounds([updatedGame.nw, updatedGame.se])
+                                map.doubleClickZoom.disable()
 
-                            map.on("mousedown", selectCorner);
+                                map.on("dblclick", selectCorner);
 
-                            for (const mission of missions!) {
-                                let m = MissionMarker(mission)
-                                m.addTo(map)
+                                for (const mission of missions!) {
+                                    let m = MissionMarker(mission)
+                                    m.addTo(map)
+                                }
                             }
-                        }
-                    }/>
-                }
-                <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
-            </MapContainer>
-        </div>
+                        }/>
+                        <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
+                    </MapContainer>
+                </div> }
+            </> }
     </div>
 }
