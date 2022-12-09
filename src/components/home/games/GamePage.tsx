@@ -1,4 +1,4 @@
-import {GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
+import {BaseMissionModel, GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
 import {getAuthHeaders, UserContext} from "../../../UserProvider";
 
 import React, {useContext, useEffect, useState} from "react";
@@ -6,20 +6,22 @@ import {useQuery} from "react-query";
 import {useNavigate, useParams} from 'react-router'
 
 import {MapContainer, TileLayer, Rectangle, useMap} from "react-leaflet";
-import {Map} from 'leaflet'
+import {Icon, Map, Marker, marker} from 'leaflet'
 
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import 'leaflet/dist/leaflet.css'
 
 export default function GamePage() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
+
     const {id} = useParams()
     const navigate = useNavigate()
 
     const [biteCodeInput, updateInput] = useState("")
 
-    function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, () => void] {
-        const {data: game, refetch: refetchGame} = useQuery<GameModel>(`game-${id}`, async function() {
+    function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, BaseMissionModel[], () => void] {
+        const {data: game, refetch: refetchGame, } = useQuery<GameModel>(`game-${id}`,
+            async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
@@ -32,8 +34,8 @@ export default function GamePage() {
             enabled: hvzUser !== null,
         })
 
-        const {data:player, refetch: refetchPlayer} = useQuery<PlayerModel>(`player-game${id}`, async function() {
-
+        const {data:player, refetch: refetchPlayer} = useQuery<PlayerModel>(`player-game${id}`,
+            async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/currentUser/player`, {
                 headers: {
                     "Content-Type": "application/json",
@@ -47,13 +49,28 @@ export default function GamePage() {
             retry: 0
         })
 
-        return [game, player, async function() {
+        const {data: missions, refetch: refetchMissions} = useQuery<BaseMissionModel[]>(`game-${id}-missions`,
+            async function() {
+            const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/missions`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(hvzUser!)
+                }
+            })
+
+            return await response.json()
+        }, {
+            enabled: hvzUser !== null
+        })
+
+        return [game, player, missions ?? [], async function() {
             await refetchGame()
             await refetchPlayer()
+            await refetchMissions()
         }]
     }
 
-    const [game, player, refetch] = useGameFetch()
+    const [game, player, missions, refetch] = useGameFetch()
 
     function joinGame(human: boolean) {
         return fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/players`, {
@@ -83,68 +100,89 @@ export default function GamePage() {
         navigate(`/kill/${biteCodeInput} ${game!.id}`)
     }
 
-    return hvzUser && <>
-        { !!game
-            ? <>
-                <div className="gameDisplay">
-                    { !!player
-                        ? (player.human
-                            ? <div className="bitecode-display">
-                                <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
-                                    + `${process.env.REACT_APP_DOMAIN}/kill/`
-                                    + `${player.biteCode}`
-                                    + ` ${game.id}` }/>
-                                <p>{player.biteCode}</p>
-                                <p>Show this to zombies trying to kill you!</p>
+    return <> { (!!hvzUser && !!game) && <>
+            <div className="gameDisplay">
+                {!!player
+                    ? (player.human
+                        ? <div className="bitecode-display">
+                            <img src={"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="
+                                + `${process.env.REACT_APP_DOMAIN}/kill/`
+                                + `${player.biteCode}`
+                                + ` ${game!.id}`}/>
+                            <p>{player.biteCode}</p>
+                            <p>Show this to zombies trying to kill you!</p>
                         </div>
-                            : <div className="zombie-display">
-                                <p>Use your camera app to scan another human-team players bitecode!</p>
-                                <p>Alternatively - manually enter their bitecode: </p>
-                                <form onSubmit={e => handleBitecodeInput(e)}>
-                                    <input type="text" onChange={e => updateInput(e.target.value)}></input>
-                                    <button type="submit">Submit kill</button>
-                                </form>
-                            </div>)
-                        : <div>
-                            <p>You're not playing this game. Would you like to join it?</p>
-                            <button onClick={joinAsHuman}>Join game (H)</button>
-                            <button onClick={joinAsZombie}>Join game (Z)</button>
-                        </div> }
-                    <h1>{game.gameName}</h1>
-                    <p>{game.description}</p>
-                    <ul>
-                        <li>Players: {game.playerCount}/{game.maxPlayers}</li>
-                        <li>Game state: {game.gameState}</li>
-                    </ul>
-                </div>
-                <div className="hvz-leaflet-container">
-                    <MapContainer>
-                        <HvzMap game={game} mapSetup={(map: Map) => {
-                            map.doubleClickZoom.disable()
-                        }}/>
-                        <Rectangle bounds={[game.nw, game.se]} />
-                    </MapContainer>
-                </div>
-            </>
-            : <div>error loading game. return to home page?</div>
-        }
-        </>
+                        : <div className="zombie-display">
+                            <p>Use your camera app to scan another human-team players bitecode!</p>
+                            <p>Alternatively - manually enter their bitecode: </p>
+                            <form onSubmit={e => handleBitecodeInput(e)}>
+                                <input type="text" onChange={e => updateInput(e.target.value)}></input>
+                                <button type="submit">Submit kill</button>
+                            </form>
+                        </div>)
+                    : <div>
+                        <p>You're not playing this game. Would you like to join it?</p>
+                        <button onClick={joinAsHuman}>Join game (H)</button>
+                        <button onClick={joinAsZombie}>Join game (Z)</button>
+                    </div>}
+                <h1>{game!.gameName}</h1>
+                <p>{game!.description}</p>
+                <ul>
+                    <li>Players: {game!.playerCount}/{game!.maxPlayers}</li>
+                    <li>Game state: {game!.gameState}</li>
+                </ul>
+            </div>
+            <div className="hvz-leaflet-container">
+                <MapContainer>
+                    <HvzMap mapSetup={(map: Map) => {
+                        map.fitBounds([game!.nw, game!.se])
+                        map.doubleClickZoom.disable()
+
+                        for (const mission of missions!) {
+                            let m = MissionMarker(mission)
+
+                            m.bindPopup("<div>" +
+                                "<h2>" + mission.name + "</h2>" +
+                                "<p>" + mission.description + "</p>" +
+                                "</div>"
+                            )
+
+                            m.addTo(map)
+                        }
+                    }}/>
+                    <Rectangle bounds={[game!.nw, game!.se]}/>
+                </MapContainer>
+            </div>
+        </> }
+    </>
 }
 
-export function HvzMap({game, mapSetup} : {game: GameModel, mapSetup: (map: Map) => void}) {
+export function HvzMap({mapSetup} : {mapSetup: (map: Map) => void}) {
     const map = useMap()
 
     useEffect(() => {
-        map.setView([(game.nw[0] + game.se[0]) / 2, (game.nw[1] + game.se[1]) / 2], 15)
         map.attributionControl.addAttribution('&copy; ' +
             '<a href="http://osm.org/copyright">OpenStreetMap</a> ' +
             'contributors'
         )
 
         mapSetup(map)
-    }, [game, map, mapSetup])
+    }, [map])
 
     return <>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
     </>
+}
+
+export function MissionMarker(mission: BaseMissionModel): Marker {
+    let m = marker([mission.lat, mission.lng], {
+        icon: new Icon({
+            iconUrl: markerIconPng,
+            iconSize: [27, 45],
+            iconAnchor: [13.5, 45]
+        }),
+        alt: mission.name,
+    })
+
+    return m
 }

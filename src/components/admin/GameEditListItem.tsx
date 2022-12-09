@@ -1,21 +1,35 @@
 import {getAuthHeaders, UserContext} from "../../UserProvider";
-import {GameModel} from "../../Models";
+import {GameModel, MissionEditModel} from "../../Models";
 import {GameState} from "../../Utils";
-import {HvzMap} from "../home/games/GamePage";
+import {HvzMap, MissionMarker} from "../home/games/GamePage";
 
 import React, {useContext, useRef, useState} from "react";
+import {useQuery} from "react-query";
 
 import {MapContainer, Rectangle} from "react-leaflet";
-import {Map} from "leaflet";
+import {LeafletMouseEvent, Map} from "leaflet";
 
 import "./admin.sass"
 
 export default function GameEditListItem({game} : {game: GameModel }) {
     const hvzUser = useContext(UserContext)
     const [updatedGame, updateGame] = useState<GameModel>(game)
+    const [showMap, __setMapVisibility] = useState(false)
 
     const currentGame = useRef<GameModel>(game)
     const counter = useRef<number>(0)
+
+    const {data: missions, isLoading} = useQuery<MissionEditModel[]>(`game-${game.id}-missions`,
+        async function() {
+        const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}/missions`, {
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(hvzUser!)
+            }
+        })
+
+        return await response.json()
+    })
 
     async function save() {
         const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}`, {
@@ -35,16 +49,34 @@ export default function GameEditListItem({game} : {game: GameModel }) {
         console.log(response)
     }
 
+    function mapModified(): boolean {
+        return JSON.stringify({
+            nw: game.nw, se: game.se
+        }) !== JSON.stringify({
+            nw: updatedGame.nw, se: updatedGame.se
+        })
+    }
+
     const reset = () => updateGame(game)
 
-    return <div>
-        <form
+    function selectCorner({latlng: {lat, lng}}: LeafletMouseEvent) {
+        updateGame(prev => ({
+            ...prev,
+            [counter.current % 2 === 0 ? "se" : "nw"]: [lat, lng]
+        }))
+
+        counter.current++
+    }
+
+    const toggleMapVisibility = () => __setMapVisibility(b => !b)
+
+    return <div className="game-edit-list-item">
+        <form className="form-inline"
             onSubmit={async (e) => {
                 e.preventDefault()
                 await save()
             }}
-            onReset={reset}
-        >
+            onReset={reset}>
             <input
                 type="number"
                 value={game.id}
@@ -84,37 +116,32 @@ export default function GameEditListItem({game} : {game: GameModel }) {
             <button type="submit">Save</button>
             <button type="reset">Reset</button>
         </form>
-        <div className="hvz-leaflet-editor">
-            <MapContainer>
-                <HvzMap
-                    game={updatedGame}
-                    mapSetup={(map: Map) => {
-                        map.removeEventListener("mousedown")
-                        map.on("mousedown", ({originalEvent, latlng}) => {
-                            if (originalEvent.button !== 1)
-                                return
+        { !isLoading &&
+            <>Toggle map display {mapModified() ? "(*)" : ""}:
+                <button onClick={_ => toggleMapVisibility()}>{showMap ? "Hide" : "Show"}</button>
+                <button onClick={_ => updateGame(prev => ({
+                    ...prev,
+                    nw: game.nw,
+                    se: game.se
+                })) } hidden={!mapModified()}>Reset map</button>
+                { showMap && <div className="hvz-leaflet-editor">
+                    <MapContainer>
+                        <HvzMap
+                            mapSetup={(map: Map) => {
+                                map.fitBounds([updatedGame.nw, updatedGame.se])
+                                map.doubleClickZoom.disable()
 
-                            currentGame.current = {
-                                ...currentGame.current,
-                                [counter.current % 2 === 0 ? "nw" : "se"]: [latlng.lat, latlng.lng]
+                                map.on("dblclick", selectCorner);
+
+                                for (const mission of missions!) {
+                                    let m = MissionMarker(mission)
+                                    m.addTo(map)
+                                }
                             }
-
-                            // update state every two clicks (allowing the user to select both corners
-                            if (counter.current % 2 !== 0) {
-                                // ensure current game has been updated by waiting 100ms
-                                (async function () {
-                                    await new Promise(resolve => setTimeout(resolve, 100))
-                                })()
-
-                                updateGame(currentGame.current)
-                            }
-
-                            counter.current++
-                        })
-                    }
-                }/>
-                <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
-            </MapContainer>
-        </div>
+                        }/>
+                        <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
+                    </MapContainer>
+                </div> }
+            </> }
     </div>
 }

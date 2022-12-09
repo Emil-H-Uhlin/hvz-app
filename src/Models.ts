@@ -1,6 +1,6 @@
 import {GameState, strToGameState} from "./Utils"
 
-export interface GameModel {
+export interface GameBaseModel {
     id: number,
     gameName: string,
     description: string,
@@ -9,6 +9,10 @@ export interface GameModel {
     playerCount: number,
     nw: [number, number],
     se: [number, number]
+}
+
+export interface GameModel extends GameBaseModel {
+    missions: [string]
 }
 
 export function jsonToGameModel(it: any): GameModel {
@@ -20,6 +24,7 @@ export function jsonToGameModel(it: any): GameModel {
             gameState: strToGameState(it.gameState),
             maxPlayers: it.maxPlayers,
             playerCount: it.playerCount,
+            missions: it.missions,
             nw: [it.nwLat, it.nwLng],
             se: [it.seLat, it.seLng]
         }
@@ -41,4 +46,16 @@ export interface KillModel {
     story: string, 
     lat: number,
     lng: number
+}
+
+export interface BaseMissionModel {
+    id: number,
+    name: string,
+    description: string,
+    lat: number,
+    lng: number
+}
+
+export interface MissionEditModel extends BaseMissionModel {
+
 }

@@ -14,7 +14,6 @@ import "./games.sass"
 export default function GamesListItem(
     {game, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
     const navigate = useNavigate()
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     const {data:player} = useQuery<PlayerModel>(`player-game${game.id}`, async function() {
@@ -45,8 +44,9 @@ export default function GamesListItem(
         <div className="hvz-leaflet-preview">
             <MapContainer>
                 <HvzMap
-                    game={game}
                     mapSetup={(map: Map) => {
+                        map.fitBounds([game.nw, game.se])
+
                         map.doubleClickZoom.disable()
                         map.zoomControl.remove()
                         map.boxZoom.disable()

@@ -5,7 +5,6 @@ import {GameModel, jsonToGameModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
 
 export default function GamesComponent() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
 
     async function joinGame(game: GameModel, team: string) {

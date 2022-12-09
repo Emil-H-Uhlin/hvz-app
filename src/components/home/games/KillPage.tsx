@@ -12,7 +12,6 @@ import {CircleMarker, MapContainer, Marker, Rectangle} from "react-leaflet";
 import {Map} from "leaflet";
 
 function KillPage() {
-	// @ts-ignore
 	const hvzUser = useContext(UserContext)
 
 	const { biteCode, gameId } = useParams()
@@ -97,7 +96,8 @@ function KillPage() {
 		{ game &&
 		<div className="hvz-leaflet-container">
 			<MapContainer>
-				<HvzMap game={game!} mapSetup={(map: Map) => {
+				<HvzMap mapSetup={(map: Map) => {
+					map.fitBounds([game.nw, game.se])
 					map.doubleClickZoom.disable()
 					map.dragging.disable()
 

@@ -9,7 +9,6 @@ import {useNavigate} from "react-router";
 import { withAuthenticationRequired } from "@auth0/auth0-react"
 
 function AdminPage() {
-    // @ts-ignore
     const hvzUser = useContext(UserContext)
     const navigate = useNavigate()
 
@@ -19,7 +18,7 @@ function AdminPage() {
         if (!hvzUser || !hvzUser.isAdmin)
             navigate("/home")
 
-    }, [hvzUser, games, navigate])
+    }, [hvzUser, navigate])
 
     return hvzUser && <>
         <div>
