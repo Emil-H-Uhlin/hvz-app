@@ -70,8 +70,8 @@ export default function GameEditListItem({game} : {game: GameModel }) {
 
     const toggleMapVisibility = () => __setMapVisibility(b => !b)
 
-    return <div>
-        <form
+    return <div className="game-edit-list-item">
+        <form className="form-inline"
             onSubmit={async (e) => {
                 e.preventDefault()
                 await save()
