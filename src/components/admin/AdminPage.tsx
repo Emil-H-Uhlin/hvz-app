@@ -12,7 +12,7 @@ function AdminPage() {
     const hvzUser = useContext(UserContext)
     const navigate = useNavigate()
 
-    const {data: games} = useQuery<GameModel[]>("allGames")
+    const {data: games, isLoading} = useQuery<GameModel[]>("allGames")
 
     useEffect(() => {
         if (!hvzUser || !hvzUser.isAdmin)
@@ -20,12 +20,12 @@ function AdminPage() {
 
     }, [hvzUser, navigate])
 
-    return hvzUser && <>
+    return <> { (!!hvzUser && !isLoading) && <>
         <div>
             { games?.map((it: GameModel) => <GameEditListItem game={it} key={it.id}/>) }
         </div>
         <textarea value={hvzUser.token} readOnly></textarea>
-    </>
+    </>}</>
 }
 
 export default withAuthenticationRequired(AdminPage)

@@ -6,10 +6,9 @@ import GamesComponent from "./games/GamesComponent";
 function HomePage() {
     const hvzUser = useContext(UserContext)
 
-    return !!hvzUser ? <>
-            <GamesComponent />
-        </>
-        : <h1>LOADING</h1>
+    return <> {!!hvzUser &&
+        <GamesComponent /> }
+    </>
 }
 
 export default withAuthenticationRequired(HomePage)
