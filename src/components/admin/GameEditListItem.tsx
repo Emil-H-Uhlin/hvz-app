@@ -3,7 +3,7 @@ import {GameModel, MissionEditModel} from "../../Models";
 import {GameState} from "../../Utils";
 import {HvzMap, MissionMarker} from "../home/games/GamePage";
 
-import React, {useContext, useRef, useState} from "react";
+import React, {useCallback, useContext, useRef, useState} from "react";
 import {useQuery} from "react-query";
 
 import {MapContainer, Rectangle} from "react-leaflet";
@@ -14,7 +14,7 @@ import "./admin.sass"
 export default function GameEditListItem({game} : {game: GameModel }) {
     const hvzUser = useContext(UserContext)
     const [updatedGame, updateGame] = useState<GameModel>(game)
-    const [showMap, __setMapVisibility] = useState(false)
+    const [showMap, setMapVisibility] = useState(false)
 
     const currentGame = useRef<GameModel>(game)
     const counter = useRef<number>(0)
@@ -68,7 +68,7 @@ export default function GameEditListItem({game} : {game: GameModel }) {
         counter.current++
     }
 
-    const toggleMapVisibility = () => __setMapVisibility(b => !b)
+    const toggleMapVisibility = useCallback(() => setMapVisibility(b => !b), [])
 
     return <div className="game-edit-list-item">
         <form className="form-inline"
@@ -77,29 +77,40 @@ export default function GameEditListItem({game} : {game: GameModel }) {
                 await save()
             }}
             onReset={reset}>
-            <input
-                type="number"
-                value={game.id}
-                readOnly
-            />
-            <input
-                type="text"
-                value={updatedGame.gameName}
-                onChange={e => {
-                    updateGame(current => currentGame.current = {
-                        ...current,
-                        gameName: e.target.value
-                    })
-                }
-            }/>
-            <textarea
-                value={updatedGame.description}
-                onChange={e =>
-                    updateGame(current => currentGame.current = {
-                        ...current,
-                        description: e.target.value
-                    })
-            }/>
+            <fieldset>
+                <label>ID: </label>
+                <input
+                    type="number"
+                    value={game.id}
+                    readOnly
+                />
+            </fieldset>
+            <fieldset>
+                <label>Name: </label>
+                <input
+                    type="text"
+                    value={updatedGame.gameName}
+                    onChange={e => {
+                        updateGame(current => currentGame.current = {
+                            ...current,
+                            gameName: e.target.value
+                        })
+                    }
+                }/>
+            </fieldset>
+
+            <fieldset>
+                <label>Description: </label>
+                <input
+                    type="text"
+                    value={updatedGame.description}
+                    onChange={e =>
+                        updateGame(current => currentGame.current = {
+                            ...current,
+                            description: e.target.value
+                        })
+                }/>
+            </fieldset>
             <select
                 value={GameState[updatedGame.gameState]}
                 onChange={e =>
@@ -107,7 +118,7 @@ export default function GameEditListItem({game} : {game: GameModel }) {
                         ...current,
                         gameState: e.target.selectedIndex
                     })
-            }>
+                }>
                 { Object.values(GameState)
                     .filter(it => typeof(it) !== "number")
                     .map(it => <option key={it}>{it}</option>)
