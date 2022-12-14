@@ -1,6 +1,7 @@
 import {UserContext} from "../../UserProvider";
 import {GameModel} from "../../Models";
 import GameEditListItem from "./GameEditListItem";
+import GameAddItem from "./GameAddItem"
 
 import {useContext, useEffect} from "react";
 import {useQuery} from "react-query";
@@ -12,7 +13,7 @@ function AdminPage() {
     const hvzUser = useContext(UserContext)
     const navigate = useNavigate()
 
-    const {data: games} = useQuery<GameModel[]>("allGames")
+    const {data: games, isLoading} = useQuery<GameModel[]>("allGames")
 
     useEffect(() => {
         if (!hvzUser || !hvzUser.isAdmin)
@@ -20,12 +21,14 @@ function AdminPage() {
 
     }, [hvzUser, navigate])
 
-    return hvzUser && <>
+    return <> { (!!hvzUser && !isLoading) && <>
         <div>
             { games?.map((it: GameModel) => <GameEditListItem game={it} key={it.id}/>) }
+            <h2>Host a new game!</h2>
+            <GameAddItem />
         </div>
         <textarea value={hvzUser.token} readOnly></textarea>
-    </>
+    </>}</>
 }
 
 export default withAuthenticationRequired(AdminPage)

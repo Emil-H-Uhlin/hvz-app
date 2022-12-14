@@ -19,8 +19,8 @@ export default function GamePage() {
 
     const [biteCodeInput, updateInput] = useState("")
 
-    function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, BaseMissionModel[], () => void] {
-        const {data: game, refetch: refetchGame, } = useQuery<GameModel>(`game-${id}`,
+    function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, BaseMissionModel[], () => void, boolean] {
+        const {data: game, refetch: refetchGame, isLoading: gameLoading } = useQuery<GameModel>(`game-${id}`,
             async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}`, {
                 headers: {
@@ -34,7 +34,7 @@ export default function GamePage() {
             enabled: hvzUser !== null,
         })
 
-        const {data:player, refetch: refetchPlayer} = useQuery<PlayerModel>(`player-game${id}`,
+        const {data:player, refetch: refetchPlayer, isLoading: playerLoading } = useQuery<PlayerModel>(`player-game${id}`,
             async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/currentUser/player`, {
                 headers: {
@@ -49,7 +49,7 @@ export default function GamePage() {
             retry: 0
         })
 
-        const {data: missions, refetch: refetchMissions} = useQuery<BaseMissionModel[]>(`game-${id}-missions`,
+        const {data: missions, refetch: refetchMissions, isLoading: missionsLoading} = useQuery<BaseMissionModel[]>(`game-${id}-missions`,
             async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/missions`, {
                 headers: {
@@ -67,10 +67,10 @@ export default function GamePage() {
             await refetchGame()
             await refetchPlayer()
             await refetchMissions()
-        }]
+        }, gameLoading || playerLoading || missionsLoading]
     }
 
-    const [game, player, missions, refetch] = useGameFetch()
+    const [game, player, missions, refetch, isFetching] = useGameFetch()
 
     function joinGame(human: boolean) {
         return fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}/players`, {
@@ -100,7 +100,7 @@ export default function GamePage() {
         navigate(`/kill/${biteCodeInput} ${game!.id}`)
     }
 
-    return <> { (!!hvzUser && !!game) && <>
+    return <> { (!!hvzUser && !isFetching) && <>
             <div className="gameDisplay">
                 {!!player
                     ? (player.human

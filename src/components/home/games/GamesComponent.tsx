@@ -21,7 +21,7 @@ export default function GamesComponent() {
             })
         })
 
-        if (response.ok) refetchGames();
+        if (response.ok) await refetchGames();
         else console.log(response)
     }
 
@@ -39,44 +39,46 @@ export default function GamesComponent() {
         return sort
     }
     
-    function useGameFetch() {
-        const { data : allGames, refetch : refetchAll } = useQuery<GameModel[]>("allGames", async function () {
-            const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(hvzUser!)
-                }
-            })
+    function useGameFetch(): [GameModel[], GameModel[], () => void, boolean] {
+        const { data : allGames, refetch : refetchAll, isLoading: allGamesLoading }
+            = useQuery<GameModel[]>("allGames", async function () {
+                const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...getAuthHeaders(hvzUser!)
+                    }
+                })
 
             return (await response.json()).map((it: any) => jsonToGameModel(it))
         })
 
-        const { data : userGames, refetch : refetchUser } = useQuery<GameModel[]>("userGames", async function() {
-            const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/currentUser/games`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(hvzUser!)
-                }
-            })
+        const { data : userGames, refetch : refetchUser, isLoading: userGamesLoading }
+            = useQuery<GameModel[]>("userGames", async function() {
+                const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/currentUser/games`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...getAuthHeaders(hvzUser!)
+                    }
+                })
 
             return (await response.json()).map((it: any) => jsonToGameModel(it))
         })
 
-        return {
-            games: [!!allGames && !!userGames
-                ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel) => aId === iId))
-                : (allGames ?? [])
-                , userGames ?? []],
-            refetchGames: async function() {
+        return [!!allGames && !!userGames
+            ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel) => aId === iId))
+            : (allGames ?? []),
+            userGames ?? [],
+            async function() {
                 await refetchAll()
                 await refetchUser()
-            }
-        }
+            },
+            allGamesLoading || userGamesLoading
+        ]
     }
 
-    const {games:[filteredGames, userGames], refetchGames} = useGameFetch()
+    const [filteredGames, userGames, refetchGames, isLoading] = useGameFetch()
 
-    return hvzUser && <>
+    return <> {!isLoading && <>
         { userGames.length > 0 && <>
             <h1>Joined games</h1>
             <div>
@@ -98,5 +100,5 @@ export default function GamesComponent() {
                 />)}
             </div>
         </> }
-    </>
+    </>}</>
 }
