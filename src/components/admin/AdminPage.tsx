@@ -1,6 +1,7 @@
 import {UserContext} from "../../UserProvider";
 import {GameModel} from "../../Models";
 import GameEditListItem from "./GameEditListItem";
+import GameAddItem from "./GameAddItem"
 
 import {useContext, useEffect} from "react";
 import {useQuery} from "react-query";
@@ -23,6 +24,8 @@ function AdminPage() {
     return <> { (!!hvzUser && !isLoading) && <>
         <div>
             { games?.map((it: GameModel) => <GameEditListItem game={it} key={it.id}/>) }
+            <h2>Host a new game!</h2>
+            <GameAddItem />
         </div>
         <textarea value={hvzUser.token} readOnly></textarea>
     </>}</>

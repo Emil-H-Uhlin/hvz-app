@@ -1,5 +1,18 @@
 import {GameState, strToGameState} from "./Utils"
 
+export interface GameAddModel {
+    gameName: string,
+    description: string,
+
+    nwLat: number,
+    nwLng: number,
+    seLat: number,
+    seLng: number,
+
+    maxPlayers: number,
+    gameState: number,
+}
+
 export interface GameBaseModel {
     id: number,
     gameName: string,
