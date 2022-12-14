@@ -49,6 +49,18 @@ export default function GameEditListItem({game} : {game: GameModel }) {
         console.log(response)
     }
 
+    async function deleteGame() {
+        const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(hvzUser!)
+            }
+        })
+
+        console.log(response)
+    }
+
     function mapModified(): boolean {
         return JSON.stringify({
             nw: game.nw, se: game.se
@@ -126,6 +138,9 @@ export default function GameEditListItem({game} : {game: GameModel }) {
             </select>
             <button type="submit">Save</button>
             <button type="reset">Reset</button>
+            <button type="button" onClick={async () => await deleteGame()}>
+                <span className="delete-button">Delete game</span>
+            </button>
         </form>
         { !isLoading &&
             <>Toggle map display {mapModified() ? "(*)" : ""}:
