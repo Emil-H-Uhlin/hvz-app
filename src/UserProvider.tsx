@@ -1,11 +1,16 @@
 import React, {useState} from "react";
 import {HvzUser} from "./App";
 import {useAuth0} from "@auth0/auth0-react";
-import {checkIfAdmin} from "./Utils"
 import {useQuery} from "react-query";
+import jwtDecode from "jwt-decode";
 
 // @ts-ignore
 export const UserContext = React.createContext<HvzUser | null>()
+
+export function checkIfAdmin(token: string) {
+    const decoded: { permissions: [] } = jwtDecode(token)
+    return decoded.permissions.filter((it: string) => it.startsWith("ADMIN_")).length === 2
+}
 
 export function getAuthHeaders(hvzUser: HvzUser): HeadersInit {
     return { "Authorization":`Bearer ${hvzUser.token}` }

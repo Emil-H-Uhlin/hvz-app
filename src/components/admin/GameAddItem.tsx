@@ -14,7 +14,7 @@ const baseAddModel: GameAddModel = {
     description: "",
     nwLat: .0, nwLng: .0,
     seLat: .0, seLng: .0,
-    gameState: 1,
+    gameState: "Registering",
     maxPlayers: 16
 }
 

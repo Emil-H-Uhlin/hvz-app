@@ -1,5 +1,5 @@
 import {UserContext, getAuthHeaders} from '../../../UserProvider'
-import {GameModel, jsonToGameModel, KillModel} from "../../../Models"
+import {GameReadModel, KillModel} from "../../../Models"
 import {HvzMap} from "./GamePage";
 
 import React, {useContext, useEffect, useState} from 'react'
@@ -8,7 +8,7 @@ import {useQuery} from "react-query";
 
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 
-import {CircleMarker, MapContainer, Marker, Rectangle} from "react-leaflet";
+import {CircleMarker, MapContainer, Rectangle} from "react-leaflet";
 import {Map} from "leaflet";
 
 function KillPage() {
@@ -24,7 +24,7 @@ function KillPage() {
 		story: ""
 	})
 
-	const {data: game} = useQuery<GameModel>(`kill-page-game${gameId}`, async function() {
+	const {data: game} = useQuery<GameReadModel>(`kill-page-game${gameId}`, async function() {
 		const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${gameId}`, {
 			headers: {
 				"Content-Type": "application/json",
@@ -32,7 +32,7 @@ function KillPage() {
 			}
 		})
 
-		return jsonToGameModel(await response.json())
+		return await response.json()
 	}, {
 		enabled: hvzUser !== null && gameId !== undefined
 	})
@@ -42,8 +42,8 @@ function KillPage() {
 
 		setFormState({
 			victimBiteCode: biteCode!,
-			lat: (game!.nw[0] + game!.se[0]) / 2,
-			lng: (game!.nw[1] + game!.se[1]) / 2,
+			lat: (game!.nwLat + game!.nwLat) / 2,
+			lng: (game!.nwLng + game!.seLng) / 2,
 			story: ""
 		})
 
@@ -97,18 +97,17 @@ function KillPage() {
 		<div className="hvz-leaflet-container">
 			<MapContainer>
 				<HvzMap mapSetup={(map: Map) => {
-					map.fitBounds([game.nw, game.se])
+					map.fitBounds([[game!.nwLat, game!.nwLng], [game!.seLat, game!.seLng]])
 					map.doubleClickZoom.disable()
 					map.dragging.disable()
 
 					map.removeEventListener("click") // clear click event to prevent multiple
 
-					map.addEventListener("click", ({latlng}) => {
+					map.addEventListener("click", ({latlng: {lat, lng}}) => {
 						setFormState((prev: KillModel) => {
 							const newState = {
 								...prev,
-								lat: latlng.lat,
-								lng: latlng.lng
+								lat, lng
 							}
 
 							return newState
@@ -116,7 +115,7 @@ function KillPage() {
 					})
 				}}/>
 				<CircleMarker center={[formState.lat, formState.lng]} />
-				<Rectangle bounds={[game.nw, game.se]} />
+				<Rectangle bounds={[[game!.nwLat, game!.nwLng], [game!.seLat, game!.seLng]]} />
 			</MapContainer>
 		</div> }
 	</div>

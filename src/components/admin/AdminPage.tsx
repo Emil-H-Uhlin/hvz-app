@@ -1,5 +1,5 @@
 import {UserContext} from "../../UserProvider";
-import {GameModel} from "../../Models";
+import {GameReadModel} from "../../Models";
 import GameEditListItem from "./GameEditListItem";
 import GameAddItem from "./GameAddItem"
 
@@ -13,7 +13,7 @@ function AdminPage() {
     const hvzUser = useContext(UserContext)
     const navigate = useNavigate()
 
-    const {data: games, isLoading} = useQuery<GameModel[]>("allGames")
+    const {data: games, isLoading} = useQuery<GameReadModel[]>("allGames")
 
     useEffect(() => {
         if (!hvzUser || !hvzUser.isAdmin)
@@ -23,7 +23,7 @@ function AdminPage() {
 
     return <> { (!!hvzUser && !isLoading) && <>
         <div>
-            { games?.map((it: GameModel) => <GameEditListItem game={it} key={it.id}/>) }
+            { games?.map((it: GameReadModel) => <GameEditListItem game={it} key={it.id}/>) }
             <h2>Host a new game!</h2>
             <GameAddItem />
         </div>

@@ -1,4 +1,4 @@
-import {BaseMissionModel, GameModel, jsonToGameModel, PlayerModel} from "../../../Models";
+import {BaseMissionModel, GameReadModel, PlayerModel} from "../../../Models";
 import {getAuthHeaders, UserContext} from "../../../UserProvider";
 
 import React, {useContext, useEffect, useState} from "react";
@@ -19,8 +19,8 @@ export default function GamePage() {
 
     const [biteCodeInput, updateInput] = useState("")
 
-    function useGameFetch(): [GameModel | undefined, PlayerModel | undefined, BaseMissionModel[], () => void, boolean] {
-        const {data: game, refetch: refetchGame, isLoading: gameLoading } = useQuery<GameModel>(`game-${id}`,
+    function useGameFetch(): [GameReadModel | undefined, PlayerModel | undefined, BaseMissionModel[], () => void, boolean] {
+        const {data: game, refetch: refetchGame, isLoading: gameLoading } = useQuery<GameReadModel>(`game-${id}`,
             async function() {
             const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${id}`, {
                 headers: {
@@ -29,7 +29,7 @@ export default function GamePage() {
                 }
             })
 
-            return jsonToGameModel(await response.json())
+            return await response.json()
         }, {
             enabled: hvzUser !== null,
         })
@@ -135,7 +135,7 @@ export default function GamePage() {
             <div className="hvz-leaflet-container">
                 <MapContainer>
                     <HvzMap mapSetup={(map: Map) => {
-                        map.fitBounds([game!.nw, game!.se])
+                        map.fitBounds([[game!.nwLat, game!.nwLng], [game!.seLat, game!.seLng]])
                         map.doubleClickZoom.disable()
 
                         for (const mission of missions!) {
@@ -150,7 +150,7 @@ export default function GamePage() {
                             m.addTo(map)
                         }
                     }}/>
-                    <Rectangle bounds={[game!.nw, game!.se]}/>
+                    <Rectangle bounds={[[game!.nwLat, game!.nwLng], [game!.seLat, game!.seLng]]}/>
                 </MapContainer>
             </div>
         </> }

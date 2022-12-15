@@ -1,5 +1,3 @@
-import {GameState, strToGameState} from "./Utils"
-
 export interface GameAddModel {
     gameName: string,
     description: string,
@@ -10,41 +8,26 @@ export interface GameAddModel {
     seLng: number,
 
     maxPlayers: number,
-    gameState: number,
+    gameState: string,
 }
 
-export interface GameBaseModel {
+export interface GameReadModel {
     id: number,
     gameName: string,
     description: string,
-    gameState: GameState,
-    maxPlayers: number,
+
+    nwLat: number,
+    nwLng: number,
+    seLat: number,
+    seLng: number,
+
     playerCount: number,
-    nw: [number, number],
-    se: [number, number]
-}
+    maxPlayers: number,
 
-export interface GameModel extends GameBaseModel {
-    missions: [string]
-}
-
-export function jsonToGameModel(it: any): GameModel {
-    try {
-        return {
-            id: it.id,
-            gameName: it.gameName,
-            description: it.description,
-            gameState: strToGameState(it.gameState),
-            maxPlayers: it.maxPlayers,
-            playerCount: it.playerCount,
-            missions: it.missions,
-            nw: [it.nwLat, it.nwLng],
-            se: [it.seLat, it.seLng]
-        }
-    }
-    catch {
-        throw new Error("Invalid game model passed")
-    }
+    gameState: string,
+    players: string[],
+    kills: string[],
+    missions: string[],
 }
 
 export interface PlayerModel {
