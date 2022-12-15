@@ -10,8 +10,9 @@ import {Icon, Map, Marker, marker} from 'leaflet'
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import 'leaflet/dist/leaflet.css'
+import {withAuthenticationRequired} from "@auth0/auth0-react";
 
-export default function GamePage() {
+function GamePage() {
     const hvzUser = useContext(UserContext)
 
     const {id} = useParams()
@@ -156,6 +157,8 @@ export default function GamePage() {
         </> }
     </>
 }
+
+export default withAuthenticationRequired(GamePage)
 
 export function HvzMap({mapSetup} : {mapSetup: (map: Map) => void}) {
     const map = useMap()
