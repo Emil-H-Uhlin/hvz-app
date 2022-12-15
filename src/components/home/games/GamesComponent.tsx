@@ -1,13 +1,13 @@
 import { useContext } from "react"
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {useQuery} from "react-query";
-import {GameModel, jsonToGameModel} from "../../../Models"
+import {GameReadModel} from "../../../Models"
 import GamesListItem from "./GamesListItem";
 
 export default function GamesComponent() {
     const hvzUser = useContext(UserContext)
 
-    async function joinGame(game: GameModel, team: string) {
+    async function joinGame(game: GameReadModel, team: string) {
         if (team !== "zombie" && team !== "human") return;
         
         const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games/${game.id}/players`, {
@@ -25,7 +25,7 @@ export default function GamesComponent() {
         else console.log(response)
     }
 
-    function gamesSorter(game1: GameModel, game2: GameModel): number {
+    function gamesSorter(game1: GameReadModel, game2: GameReadModel): number {
         let sort = 0
 
         if (game1.gameState !== game2.gameState)
@@ -39,9 +39,9 @@ export default function GamesComponent() {
         return sort
     }
     
-    function useGameFetch(): [GameModel[], GameModel[], () => void, boolean] {
+    function useGameFetch(): [GameReadModel[], GameReadModel[], () => void, boolean] {
         const { data : allGames, refetch : refetchAll, isLoading: allGamesLoading }
-            = useQuery<GameModel[]>("allGames", async function () {
+            = useQuery<GameReadModel[]>("allGames", async function () {
                 const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/games`, {
                     headers: {
                         "Content-Type": "application/json",
@@ -49,11 +49,11 @@ export default function GamesComponent() {
                     }
                 })
 
-            return (await response.json()).map((it: any) => jsonToGameModel(it))
+            return await response.json()
         })
 
         const { data : userGames, refetch : refetchUser, isLoading: userGamesLoading }
-            = useQuery<GameModel[]>("userGames", async function() {
+            = useQuery<GameReadModel[]>("userGames", async function() {
                 const response = await fetch(`${process.env.REACT_APP_HVZ_API_BASE_URL}/currentUser/games`, {
                     headers: {
                         "Content-Type": "application/json",
@@ -61,11 +61,11 @@ export default function GamesComponent() {
                     }
                 })
 
-            return (await response.json()).map((it: any) => jsonToGameModel(it))
+            return await response.json()
         })
 
         return [!!allGames && !!userGames
-            ? allGames.filter(({id:aId}: GameModel) => !userGames.some(({id:iId}: GameModel) => aId === iId))
+            ? allGames.filter(({id:aId}: GameReadModel) => !userGames.some(({id:iId}: GameReadModel) => aId === iId))
             : (allGames ?? []),
             userGames ?? [],
             async function() {
@@ -82,7 +82,7 @@ export default function GamesComponent() {
         { userGames.length > 0 && <>
             <h1>Joined games</h1>
             <div>
-                { userGames.sort(gamesSorter).map((game: GameModel) => <GamesListItem
+                { userGames.sort(gamesSorter).map((game: GameReadModel) => <GamesListItem
                     game={game}
                     key={game.id}
                     joined={true}
@@ -92,7 +92,7 @@ export default function GamesComponent() {
         { filteredGames.length > 0 && <>
             <h1>All games</h1>
             <div>
-                { filteredGames.sort(gamesSorter).map((game: GameModel) => <GamesListItem
+                { filteredGames.sort(gamesSorter).map((game: GameReadModel) => <GamesListItem
                     game={game}
                     key={game.id}
                     handleGameJoin={(team: string) => joinGame(game, team)}

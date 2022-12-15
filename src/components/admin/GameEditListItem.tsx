@@ -1,5 +1,5 @@
 import {getAuthHeaders, UserContext} from "../../UserProvider";
-import {GameModel, MissionEditModel} from "../../Models";
+import {GameReadModel, MissionEditModel} from "../../Models";
 import {GameState} from "../../Utils";
 import {HvzMap, MissionMarker} from "../home/games/GamePage";
 
@@ -11,12 +11,12 @@ import {LeafletMouseEvent, Map} from "leaflet";
 
 import "./admin.sass"
 
-export default function GameEditListItem({game} : {game: GameModel }) {
+export default function GameEditListItem({game} : {game: GameReadModel }) {
     const hvzUser = useContext(UserContext)
-    const [updatedGame, updateGame] = useState<GameModel>(game)
+    const [updatedGame, updateGame] = useState<GameReadModel>(game)
     const [showMap, setMapVisibility] = useState(false)
 
-    const currentGame = useRef<GameModel>(game)
+    const currentGame = useRef<GameReadModel>(game)
     const counter = useRef<number>(0)
 
     const {data: missions, isLoading} = useQuery<MissionEditModel[]>(`game-${game.id}-missions`,
@@ -40,9 +40,7 @@ export default function GameEditListItem({game} : {game: GameModel }) {
             },
             body: JSON.stringify({
                 ...updatedGame,
-                gameState: GameState[updatedGame.gameState].toUpperCase(),
-                nwLat: updatedGame.nw[0], nwLng: updatedGame.nw[1],
-                seLat: updatedGame.se[0], seLng: updatedGame.se[1]
+                gameState: updatedGame.gameState.toUpperCase()
             })
         })
 
@@ -63,9 +61,11 @@ export default function GameEditListItem({game} : {game: GameModel }) {
 
     function mapModified(): boolean {
         return JSON.stringify({
-            nw: game.nw, se: game.se
+            nwLat: game.nwLat, nwLng: game.nwLng,
+            seLat: game.seLat, seLng: game.seLng
         }) !== JSON.stringify({
-            nw: updatedGame.nw, se: updatedGame.se
+            nwLat: updatedGame.nwLat, nwLng: updatedGame.nwLng,
+            seLat: updatedGame.seLat, seLng: updatedGame.seLng
         })
     }
 
@@ -124,11 +124,11 @@ export default function GameEditListItem({game} : {game: GameModel }) {
                 }/>
             </fieldset>
             <select
-                value={GameState[updatedGame.gameState]}
+                value={updatedGame.gameState.toUpperCase()}
                 onChange={e =>
                     updateGame(current => currentGame.current = {
                         ...current,
-                        gameState: e.target.selectedIndex
+                        gameState: e.target.value
                     })
                 }>
                 { Object.values(GameState)
@@ -147,14 +147,16 @@ export default function GameEditListItem({game} : {game: GameModel }) {
                 <button onClick={_ => toggleMapVisibility()}>{showMap ? "Hide" : "Show"}</button>
                 <button onClick={_ => updateGame(prev => ({
                     ...prev,
-                    nw: game.nw,
-                    se: game.se
+                    nwLat: game.nwLat,
+                    nwLng: game.nwLng,
+                    seLat: game.seLat,
+                    seLng: game.seLng
                 })) } hidden={!mapModified()}>Reset map</button>
                 { showMap && <div className="hvz-leaflet-editor">
                     <MapContainer>
                         <HvzMap
                             mapSetup={(map: Map) => {
-                                map.fitBounds([updatedGame.nw, updatedGame.se])
+                                map.fitBounds([[updatedGame.nwLat, updatedGame.nwLng], [updatedGame.seLat, updatedGame.seLng]])
                                 map.doubleClickZoom.disable()
 
                                 map.on("dblclick", selectCorner);
@@ -165,7 +167,7 @@ export default function GameEditListItem({game} : {game: GameModel }) {
                                 }
                             }
                         }/>
-                        <Rectangle bounds={[updatedGame.nw, updatedGame.se]} />
+                        <Rectangle bounds={[[updatedGame.nwLat, updatedGame.nwLng], [updatedGame.seLat, updatedGame.seLng]]} />
                     </MapContainer>
                 </div> }
             </> }

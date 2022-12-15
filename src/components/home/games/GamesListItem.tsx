@@ -1,4 +1,4 @@
-import {GameModel, PlayerModel} from "../../../Models"
+import {GameReadModel, PlayerModel} from "../../../Models"
 import {getAuthHeaders, UserContext} from "../../../UserProvider"
 import {HvzMap} from "./GamePage";
 
@@ -12,7 +12,7 @@ import {Map} from 'leaflet'
 import "./games.sass"
 
 export default function GamesListItem(
-    {game, joined} : { game: GameModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
+    {game, joined} : { game: GameReadModel, handleGameJoin?: (team: string) => void, joined: boolean }) {
     const navigate = useNavigate()
     const hvzUser = useContext(UserContext)
 
@@ -45,7 +45,7 @@ export default function GamesListItem(
             <MapContainer>
                 <HvzMap
                     mapSetup={(map: Map) => {
-                        map.fitBounds([game.nw, game.se])
+                        map.fitBounds([[game.nwLat, game.nwLng], [game.seLat, game.seLng]])
 
                         map.doubleClickZoom.disable()
                         map.zoomControl.remove()
