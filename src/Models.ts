@@ -30,6 +30,13 @@ export interface GameReadModel {
     missions: string[],
 }
 
+export interface MissionAddModel {
+    name: string,
+    description: string,
+    lat: number,
+    lng: number
+}
+
 export interface PlayerModel {
 	id: number,
 	human: boolean,

@@ -1,19 +1,30 @@
 import {getAuthHeaders, UserContext} from "../../UserProvider";
-import {GameReadModel, MissionEditModel} from "../../Models";
+import {GameReadModel, MissionAddModel, MissionEditModel} from "../../Models";
 import {GameState} from "../../Utils";
 import {HvzMap, MissionMarker} from "../home/games/GamePage";
 
 import React, {useCallback, useContext, useRef, useState} from "react";
 import {useQuery} from "react-query";
+import Popup from "reactjs-popup";
 
 import {MapContainer, Rectangle} from "react-leaflet";
 import {LeafletMouseEvent, Map} from "leaflet";
 
 import "./admin.sass"
+import MissionAddPopup from "./MissionAddPopup";
+
+const baseAddModel: MissionAddModel = {
+    name: "New name",
+    description: "",
+    lat: .0,
+    lng: .0
+}
 
 export default function GameEditListItem({game} : {game: GameReadModel }) {
     const hvzUser = useContext(UserContext)
     const [updatedGame, updateGame] = useState<GameReadModel>(game)
+    const [missionToAdd, setMission] = useState<MissionAddModel>(baseAddModel)
+
     const [showMap, setMapVisibility] = useState(false)
 
     const currentGame = useRef<GameReadModel>(game)
@@ -68,6 +79,8 @@ export default function GameEditListItem({game} : {game: GameReadModel }) {
             seLat: updatedGame.seLat, seLng: updatedGame.seLng
         })
     }
+
+    const gameModified = () => JSON.stringify(game) !== JSON.stringify(updatedGame)
 
     const reset = () => updateGame(game)
 
@@ -141,6 +154,40 @@ export default function GameEditListItem({game} : {game: GameReadModel }) {
             <button type="button" onClick={async () => await deleteGame()}>
                 <span className="delete-button">Delete game</span>
             </button>
+            { !gameModified() &&
+                <Popup trigger={<button type="button" >Add mission</button> }
+                       modal
+                       nested
+                >
+                    {   //@ts-ignore
+                        close => <div className="mission-add-popup">
+                            <h2>Add mission</h2>
+                            <form>
+                                <fieldset>
+                                    <label>Title: </label>
+                                    <input type="text"/>
+                                </fieldset>
+                                <fieldset>
+                                    <label>Description: </label>
+                                    <input type="text"/>
+                                </fieldset>
+                                <button type="submit">Add</button>
+                                <button type="button" onClick={() => {
+                                    setMission(baseAddModel)
+                                    close()
+                                }}>Cancel</button>
+                            </form>
+                            <MissionAddPopup
+                                game={game}
+                                onClick={([lat, lng]) => setMission(prev => ({
+                                    ...prev,
+                                    lat,
+                                    lng
+                                }))
+                            } />
+                        </div>
+                    }
+                </Popup> }
         </form>
         { !isLoading &&
             <>Toggle map display {mapModified() ? "(*)" : ""}:
